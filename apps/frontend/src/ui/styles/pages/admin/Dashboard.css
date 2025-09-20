@@ -1,0 +1,21 @@
+.dashboard-logo{
+    width: 200px ;
+}
+
+.btnsContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 50%;
+    margin: 100px auto;
+}
+
+.accentBtn{
+    background-color: var(--accent-color);
+    color: var(--white-color);
+}
+
+.primaryBtn{
+    background-color: var(--secondary-color);
+    color: var(--white-color);
+}

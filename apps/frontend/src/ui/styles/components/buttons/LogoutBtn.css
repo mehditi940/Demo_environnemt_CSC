@@ -1,0 +1,11 @@
+.logoutBtn{
+    background-color: var(--accent-color);
+    color: #ffffff;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+.logoutBtn:hover{
+    background-color: #e74c3c;
+}

@@ -1,0 +1,10 @@
+.main-container{
+    position: relative;
+    text-align: center;
+    margin: 0 auto;
+    flex: 1;
+    min-height: 110vh;
+    /* max-width: 800px; */
+    padding: 20px 0 0 0;
+    overflow: auto;
+}

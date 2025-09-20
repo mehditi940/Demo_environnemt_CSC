@@ -1,0 +1,36 @@
+.message-alert-container {
+  position: absolute;
+  width: 200px;
+  left: 50%;
+  top: 70%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 1px 0px 6px 0px #ccc;
+  border-radius: 8px;
+  /* bottom: 20px; */
+  overflow: hidden;
+}
+
+/* Progressbar via ::after */
+.message-alert-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background-color: #047c36;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: progressBarAnim 5s linear forwards;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+@keyframes progressBarAnim {
+  to {
+    transform: scaleX(1);
+  }
+}

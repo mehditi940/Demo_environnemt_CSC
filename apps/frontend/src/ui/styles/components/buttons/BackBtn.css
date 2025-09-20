@@ -1,0 +1,11 @@
+.backBtn{
+    background-color: #f2f2f2;
+    color: #000000;
+    position: absolute;
+    top: 30px;
+    left: 10px;
+}
+
+.backBtn:hover{
+    background-color: #ffffff;
+}

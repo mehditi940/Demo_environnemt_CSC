@@ -1,0 +1,191 @@
+/* Basisstijl voor de header */
+.desktop-header {
+    position: sticky; /* Maak de header sticky */
+    top: 0; /* Houd de header bovenaan de pagina */
+    z-index: 1000;
+    transition: all 0.3s, box-shadow 0.3s, padding 0.3s;
+    background-color: var(--white-color); /* Standaard witte achtergrond */
+    padding: 20px 45px; /* Standaard grotere padding */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    
+}
+
+/* Stijl bij scroll */
+.desktop-header.scrolled {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Schaduw bij scrollen */
+    padding: 10px 25px; /* Maak de header kleiner wanneer er gescrold is */
+    background-color: #000000c9;
+    .nav-link {
+        color: var(--white-color);
+
+    }
+
+    .logo-container::after {
+   
+        padding-bottom: 50px;
+    }
+
+    .icon-container i {
+       color: var(--white-color);
+    }
+
+    .nav-link::after {
+  
+        background-color: var(--orange-color); /* Kleur van de lijn */
+    }
+    
+}
+
+.logo-container {
+    position: relative; /* Zorgt ervoor dat ::after zich baseert op deze container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1; /* Zorg ervoor dat de inhoud boven de achtergrond blijft */
+    padding: 10px 40px ; /* Optionele padding */
+}
+
+.logo-container::after {
+    content: "";
+    position: absolute;
+    top: -23px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    /* border: 1px solid var(--green-color); */
+    z-index: -1;
+    border-radius: 0 0 20px 20px;
+    padding-bottom: 70px;
+    box-shadow: 0px 0px 2px 1px #cccccc;
+    transition: padding 0.3s; /* Voeg een transitie toe voor achtergrondkleur en padding */
+
+}
+/* Logo stijl */
+.logo {
+    width: 60px; /* Kleinere logo wanneer gescrold */
+    transition: width 0.3s; /* Maak de logo-grootte ook flexibel */
+}
+
+/* Navigatie lijst */
+.nav-list {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Navigatie items */
+.nav-link {
+    margin: 0 15px;
+    color: var(--black-color);
+    text-decoration: none;
+    font-size: 17px;
+    position: relative; /* Maak de link een relatief element voor het gebruik van ::after */
+
+    transition: color 0.2s, transform 0.2s;
+}
+
+/* Hover-effect voor links met een lijn onder de tekst */
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+.nav-link::after {
+    content: ''; /* Leeg inhoud voor de lijn */
+    position: absolute;
+    bottom: -10px; /* Lijn direct onder de tekst */
+    left: 0;
+    width: 0%; /* Start met een breedte van 0 */
+    height: 2px; /* Hoogte van de lijn */
+    background-color: var(--secondary-color); /* Kleur van de lijn */
+    transition: width 0.3s ease; /* Maak de transitie vloeiend */
+}
+
+.nav-link:hover::after {
+    width: 100%; /* Maak de lijn 100% breed bij hover */
+    color: var(--secondary-color);
+}
+
+
+.logoNavContainer{
+    display: flex;
+    align-items: center;
+}
+
+
+.icon-container {
+    position: relative;
+    cursor: pointer;
+    width: 60px;
+}
+
+/* Profielfoto styling */
+.profile-picture {
+    width: 55px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    height: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect voor profielfoto */
+.profile-picture:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown menu container */
+.options-container {
+    position: absolute;
+    top: 110%; /* Zorg dat het iets onder de profielfoto verschijnt */
+    left: 10px;
+    background-color: #fff;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    z-index: 1000;
+    width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transform: translateY(-10px);
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease 0.5s; }
+
+/* Toon het menu als het actief is */
+.icon-container:hover .options-container,
+.icon-container:focus-within .options-container {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+}
+
+/* Stijl voor individuele menu-opties */
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hover effect voor menu-opties */
+.option-item:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+/* Stijl voor het pictogram naast de tekst */
+.option-item i {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #000 !important;
+}

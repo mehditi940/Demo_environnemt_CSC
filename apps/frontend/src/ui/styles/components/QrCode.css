@@ -1,0 +1,36 @@
+.qrImg{
+    width: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    overflow: hidden;
+
+}
+
+.qr-container{
+width: 100%;
+height: 100vh;
+z-index: 9999;
+position: relative;
+}
+
+.overlay-qr{
+width: 100%;
+height: 100%;
+background-color: #000000bd;
+}
+
+.accentBtn-qr{
+    background-color: var(--accent-color);
+    color: var(--white-color);
+    position: absolute;
+    left: 50%;
+    top: 80%;
+    transform: translate(-50%, -50%);
+}
+
+.accentBtn-qr:hover{
+    background-color: #e74c3c;
+}

@@ -1,0 +1,152 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+
+.popup-card {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  width: 420px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #0f62fe;
+}
+
+.popup-card h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.popup-card label {
+  display: block;
+  font-weight: 500;
+  margin: 12px 0 6px;
+  color: #444;
+}
+
+.popup-card input[type="text"],
+.popup-card input[type="file"] {
+  width: 95%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.popup-card input[type="text"]:focus {
+  border-color: #0f62fe;
+  outline: none;
+}
+
+.model-list {
+  margin-top: 10px;
+}
+
+.model-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f6f6f6;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.model-item span {
+  font-size: 14px;
+  color: #333;
+}
+
+.model-item button {
+  background: #ff4c4c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.model-item button:hover {
+  background: #e03e3e;
+}
+
+.file-upload div {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.save-btn {
+  margin-top: 24px;
+  padding: 12px 24px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background-color: var(--primary-color);
+}
+
+
+.input-error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.update-patient-container{
+  display: flex;
+      justify-content: space-between;
+    align-items: center;
+}

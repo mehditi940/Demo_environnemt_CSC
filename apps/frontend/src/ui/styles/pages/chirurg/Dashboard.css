@@ -1,0 +1,54 @@
+.qr-active{
+    overflow: hidden;
+    padding: 0;
+}
+
+.optionsContainer {
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+select {
+    width: 200px;
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+}
+
+.accentBtn {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.accentBtn:hover {
+    background-color: #e74c3c;
+}
+
+.primaryBtnChirurg {
+    background-color: var(--secondary-color);
+    color: white;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+
+}
+
+.primaryBtnChirurg:hover {
+    background-color: var(--primary-color);
+}
