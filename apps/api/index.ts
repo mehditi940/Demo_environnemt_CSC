@@ -9,6 +9,7 @@ import {
   AuthBearerStrategy,
   LocalLoginStrategy,
   PassportJwtStrategy,
+  AdfsJwtStrategy,
 } from "./services/passport";
 import passport from "passport";
 import cors from "cors";
@@ -113,6 +114,9 @@ app.use(bodyParser.json());
 passport.use(LocalLoginStrategy);
 passport.use(PassportJwtStrategy);
 passport.use(AuthBearerStrategy);
+if (AdfsJwtStrategy) {
+  passport.use("adfs-jwt", AdfsJwtStrategy);
+}
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
@@ -173,7 +177,10 @@ app.get("/", (req, res) => {
  */
 app.use(
   "/static",
-  passport.authenticate(["jwt", "bearer"], { session: false }),
+  passport.authenticate(
+    AdfsJwtStrategy ? ["jwt", "bearer", "adfs-jwt"] : ["jwt", "bearer"],
+    { session: false }
+  ),
   authorizationMiddleware("user"),
   express.static(process.env.STORAGE_PATH)
 );
@@ -195,7 +202,10 @@ io.engine.use((req: any, res: any, next: any) => {
   // This middleware is used to authenticate the socket connection
   const isHandshake = req._query.sid === undefined;
   if (isHandshake) {
-    passport.authenticate(["jwt", "bearer"], { session: false })(
+    passport.authenticate(
+      AdfsJwtStrategy ? ["jwt", "bearer", "adfs-jwt"] : ["jwt", "bearer"],
+      { session: false }
+    )(
       req,
       res,
       next

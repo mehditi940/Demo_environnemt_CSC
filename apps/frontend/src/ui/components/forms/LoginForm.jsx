@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../../context/AuthContext';
+import { loginWithAdfs } from '../../../service/oidcClient';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/components/forms/LoginForm.css';
 const LoginForm = () => {
@@ -145,8 +146,8 @@ const LoginForm = () => {
           </div>
         )}
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className="login-button"
           disabled={isSubmitting}
         >
@@ -155,7 +156,17 @@ const LoginForm = () => {
               <span className="spinner"></span>
               Inloggen...
             </>
-          ) : 'Inloggen'}
+          ) : "Inloggen"}
+        </button>
+
+        <div style={{ textAlign: 'center', margin: '12px 0', color: '#888' }}>of</div>
+
+        <button
+          type="button"
+          className="login-button"
+          onClick={() => loginWithAdfs()}
+        >
+          Inloggen met AD (ADFS)
         </button>
       </form>
     </div>

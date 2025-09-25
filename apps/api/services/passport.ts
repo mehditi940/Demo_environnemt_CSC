@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Strategy as LocalStategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import jwksRsa from "jwks-rsa";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
 import crypto from "crypto";
 import db from "../schemas/db";
@@ -114,3 +115,55 @@ export const AuthBearerStrategy = new BearerStrategy((token, done) => {
     }
   );
 });
+
+// Optional: ADFS / OIDC JWT strategy (validates tokens issued by external IdP via JWKS)
+// Enabled when ADFS_OIDC_JWKS_URI, ADFS_OIDC_ISSUER, and ADFS_OIDC_AUDIENCE are configured.
+const hasAdfsEnv = !!(
+  process.env.ADFS_OIDC_JWKS_URI &&
+  process.env.ADFS_OIDC_ISSUER &&
+  process.env.ADFS_OIDC_AUDIENCE
+);
+
+export const AdfsJwtStrategy = hasAdfsEnv
+  ? new JwtStrategy(
+      {
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        // Dynamically fetch signing keys via JWKS
+        secretOrKeyProvider: jwksRsa.passportJwtSecret({
+          jwksUri: process.env.ADFS_OIDC_JWKS_URI!,
+          cache: true,
+          cacheMaxEntries: 5,
+          cacheMaxAge: 10 * 60 * 1000, // 10 minutes
+          rateLimit: true,
+          jwksRequestsPerMinute: 5,
+        }) as any,
+        issuer: process.env.ADFS_OIDC_ISSUER!,
+        audience: process.env.ADFS_OIDC_AUDIENCE!,
+        algorithms: ["RS256", "RS384", "RS512"],
+      },
+      async (payload: any, cb) => {
+        try {
+          // Map common ADFS/AAD claim shapes to our UserInfo
+          const email =
+            payload?.email ||
+            payload?.upn ||
+            payload?.unique_name ||
+            payload?.preferred_username ||
+            "";
+          const firstName = payload?.given_name || payload?.name || email || "User";
+          const id = (payload?.sub || payload?.oid || payload?.sid || email || "").toString();
+
+          // Default ADFS users to role "user"; adjust with your own mapping if needed
+          const user = {
+            id,
+            firstName,
+            role: "user",
+            email,
+          };
+          return cb(null, user);
+        } catch (error) {
+          return cb(error as Error);
+        }
+      }
+    )
+  : undefined;

@@ -24,6 +24,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { AnimatePresence } from "framer-motion";
 import Patients from "./ui/pages/admin/Patients";
 import Users from "./ui/pages/admin/Users";
+import AuthCallback from "./ui/pages/AuthCallback";
 function App() {
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
@@ -52,6 +53,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />}></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/auth/callback" element={<AuthCallback />}></Route>
         <Route
           path="/chirurg/view/:roomId"
           element={
