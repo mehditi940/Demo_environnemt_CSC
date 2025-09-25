@@ -28,8 +28,13 @@ if (!process.env.PORT) {
 if (!process.env.DB_FILE_NAME) {
   throw new Error("DB_FILE_NAME is not set in the environment variables.");
 }
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is not set in the environment variables.");
+const adfsEnabled = !!(
+  process.env.ADFS_OIDC_JWKS_URI &&
+  process.env.ADFS_OIDC_ISSUER &&
+  process.env.ADFS_OIDC_AUDIENCE
+);
+if (!adfsEnabled && !process.env.JWT_SECRET) {
+  throw new Error("Either ADFS OIDC variables or JWT_SECRET must be set.");
 }
 if (!process.env.API_URL) {
   throw new Error("API_URL is not set in the environment variables.");
@@ -40,9 +45,7 @@ if (!process.env.FRONTEND_URL && !process.env.FRONTEND_URLS) {
 if (!process.env.STORAGE_PATH) {
   throw new Error("STORAGE_PATH is not set in the environment variables.");
 }
-if (!process.env.AUTH_TOKEN) {
-  throw new Error("AUTH_TOKEN is not set in the environment variables.");
-}
+// AUTH_TOKEN only required if bearer strategy is used
 if (!process.env.STUN_SERVERS) {
   throw new Error("STUN_SERVERS is not set in the environment variables.");
 }
@@ -112,7 +115,9 @@ app.use(
 // Passport middleware
 app.use(bodyParser.json());
 passport.use(LocalLoginStrategy);
-passport.use(PassportJwtStrategy);
+if (PassportJwtStrategy) {
+  passport.use(PassportJwtStrategy);
+}
 passport.use(AuthBearerStrategy);
 if (AdfsJwtStrategy) {
   passport.use("adfs-jwt", AdfsJwtStrategy);
@@ -177,10 +182,9 @@ app.get("/", (req, res) => {
  */
 app.use(
   "/static",
-  passport.authenticate(
-    AdfsJwtStrategy ? ["jwt", "bearer", "adfs-jwt"] : ["jwt", "bearer"],
-    { session: false }
-  ),
+  passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
+    session: false,
+  }),
   authorizationMiddleware("user"),
   express.static(process.env.STORAGE_PATH)
 );
@@ -202,10 +206,9 @@ io.engine.use((req: any, res: any, next: any) => {
   // This middleware is used to authenticate the socket connection
   const isHandshake = req._query.sid === undefined;
   if (isHandshake) {
-    passport.authenticate(
-      AdfsJwtStrategy ? ["jwt", "bearer", "adfs-jwt"] : ["jwt", "bearer"],
-      { session: false }
-    )(
+    passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
+      session: false,
+    })(
       req,
       res,
       next

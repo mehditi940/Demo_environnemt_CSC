@@ -53,37 +53,37 @@ export const LocalLoginStrategy = new LocalStategy(
 );
 
 // JWT strategy for passport authentication
-export const PassportJwtStrategy = new JwtStrategy(
-  {
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: process.env.JWT_SECRET!,
-  },
-  async (jwtPayload, cb) => {
-    try {
-      // Find user by id
-      const users = await db
-        .select()
-        .from(userSchema)
-        .where(eq(userSchema.id, jwtPayload.id))
-        .limit(1);
+export const PassportJwtStrategy = process.env.JWT_SECRET
+  ? new JwtStrategy(
+      {
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: process.env.JWT_SECRET!,
+      },
+      async (jwtPayload, cb) => {
+        try {
+          const users = await db
+            .select()
+            .from(userSchema)
+            .where(eq(userSchema.id, jwtPayload.id))
+            .limit(1);
 
-      if (users.length === 0) {
-        return cb(null, false);
+          if (users.length === 0) {
+            return cb(null, false);
+          }
+
+          const user = users[0];
+          return cb(null, {
+            id: user.id,
+            firstName: user.firstName,
+            role: user.role,
+            email: user.email,
+          });
+        } catch (error) {
+          cb(error);
+        }
       }
-
-      // If user exists, return user info without password and salt
-      const user = users[0];
-      return cb(null, {
-        id: user.id,
-        firstName: user.firstName,
-        role: user.role,
-        email: user.email,
-      });
-    } catch (error) {
-      cb(error);
-    }
-  }
-);
+    )
+  : undefined;
 
 // Bearer strategy for passport authentication
 export const AuthBearerStrategy = new BearerStrategy((token, done) => {
@@ -157,7 +157,7 @@ export const AdfsJwtStrategy = hasAdfsEnv
           const user = {
             id,
             firstName,
-            role: "user",
+            role: "admin",
             email,
           };
           return cb(null, user);
