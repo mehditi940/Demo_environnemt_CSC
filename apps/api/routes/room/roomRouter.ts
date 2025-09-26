@@ -20,6 +20,14 @@ import { Patient, patientSchema } from "../../schemas/patient";
 import { eq, inArray } from "drizzle-orm";
 
 const roomRouter = Router();
+const adfsEnabled =
+  !!process.env.ADFS_OIDC_JWKS_URI &&
+  !!process.env.ADFS_OIDC_ISSUER &&
+  !!process.env.ADFS_OIDC_AUDIENCE;
+const jwtStrategy: "jwt" | "adfs-jwt" = adfsEnabled ? "adfs-jwt" : "jwt";
+const jwtOrBearerStrategies: string[] = adfsEnabled
+  ? ["adfs-jwt", "bearer"]
+  : ["jwt", "bearer"];
 
 /**
  * @swagger
@@ -386,7 +394,7 @@ const roomRouter = Router();
 // Create a new room
 roomRouter.post(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -503,7 +511,7 @@ roomRouter.post(
 
 roomRouter.put(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res, next) => {
     try {
@@ -681,7 +689,7 @@ const getRoom = async (room: Room) => {
 // Get rooms list
 roomRouter.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("admin"),
   async (req, res) => {
     const user = req?.user as UserInfo;
@@ -739,7 +747,7 @@ roomRouter.get(
 // Get room by ID
 roomRouter.get(
   "/:id",
-  passport.authenticate(["jwt", "bearer"], { session: false }),
+  passport.authenticate(jwtOrBearerStrategies, { session: false }),
   authorizationMiddleware("admin"),
   async (req, res) => {
     const user = req?.user as UserInfo;
@@ -795,7 +803,7 @@ roomRouter.get(
 // Delete room by ID
 roomRouter.delete(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     const roomId = req.params.id;

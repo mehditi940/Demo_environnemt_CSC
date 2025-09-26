@@ -7,6 +7,11 @@ import { Patient, patientInsertSchema, patientSchema } from "../../schemas/patie
 import { count, eq } from "drizzle-orm";
 
 const patientRouter = Router();
+const adfsEnabled =
+  !!process.env.ADFS_OIDC_JWKS_URI &&
+  !!process.env.ADFS_OIDC_ISSUER &&
+  !!process.env.ADFS_OIDC_AUDIENCE;
+const jwtStrategy: "jwt" | "adfs-jwt" = adfsEnabled ? "adfs-jwt" : "jwt";
 
 /**
  * @swagger
@@ -257,7 +262,7 @@ const patientRouter = Router();
 // Create a new patient
 patientRouter.post(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -297,7 +302,7 @@ patientRouter.post(
 // Update a patient
 patientRouter.put(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -382,7 +387,7 @@ patientRouter.put(
 // Delete a patient
 patientRouter.delete(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -416,7 +421,7 @@ patientRouter.delete(
 // Get patients list
 patientRouter.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("admin"),
   async (req, res) => {
     try {
@@ -441,7 +446,7 @@ patientRouter.get(
 // Get a patient
 patientRouter.get(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("admin"),
   async (req, res) => {
     try {

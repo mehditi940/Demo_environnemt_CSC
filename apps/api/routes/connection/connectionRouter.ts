@@ -9,6 +9,11 @@ import { UserInfo } from "../../schemas/user";
 import { ConnectionResponse, connectionSchema } from "../../schemas/connection";
 
 const connectionRouter = Router();
+const adfsEnabled =
+  !!process.env.ADFS_OIDC_JWKS_URI &&
+  !!process.env.ADFS_OIDC_ISSUER &&
+  !!process.env.ADFS_OIDC_AUDIENCE;
+const jwtStrategy: "jwt" | "adfs-jwt" = adfsEnabled ? "adfs-jwt" : "jwt";
 
 /**
  * @swagger
@@ -130,7 +135,7 @@ const connectionRouter = Router();
 // Create a connection request
 connectionRouter.post(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate(jwtStrategy, { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {

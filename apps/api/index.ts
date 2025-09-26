@@ -114,14 +114,15 @@ app.use(
 
 // Passport middleware
 app.use(bodyParser.json());
-passport.use(LocalLoginStrategy);
-if (PassportJwtStrategy) {
-  passport.use(PassportJwtStrategy);
-}
-passport.use(AuthBearerStrategy);
 if (AdfsJwtStrategy) {
   passport.use("adfs-jwt", AdfsJwtStrategy);
+} else {
+  passport.use(LocalLoginStrategy);
+  if (PassportJwtStrategy) {
+    passport.use(PassportJwtStrategy);
+  }
 }
+passport.use(AuthBearerStrategy);
 
 // Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
@@ -182,7 +183,7 @@ app.get("/", (req, res) => {
  */
 app.use(
   "/static",
-  passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
+  passport.authenticate(adfsEnabled ? ["adfs-jwt"] : ["jwt"], {
     session: false,
   }),
   authorizationMiddleware("user"),
@@ -206,7 +207,7 @@ io.engine.use((req: any, res: any, next: any) => {
   // This middleware is used to authenticate the socket connection
   const isHandshake = req._query.sid === undefined;
   if (isHandshake) {
-    passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
+    passport.authenticate(adfsEnabled ? ["adfs-jwt"] : ["jwt"], {
       session: false,
     })(
       req,
