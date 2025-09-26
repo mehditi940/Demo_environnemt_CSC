@@ -33,6 +33,7 @@ const adfsEnabled = !!(
   process.env.ADFS_OIDC_ISSUER &&
   process.env.ADFS_OIDC_AUDIENCE
 );
+const primaryJwtStrategy = adfsEnabled ? "adfs-jwt" : "jwt";
 if (!adfsEnabled && !process.env.JWT_SECRET) {
   throw new Error("Either ADFS OIDC variables or JWT_SECRET must be set.");
 }
@@ -183,7 +184,7 @@ app.get("/", (req, res) => {
  */
 app.use(
   "/static",
-  passport.authenticate(adfsEnabled ? ["adfs-jwt"] : ["jwt"], {
+  passport.authenticate(primaryJwtStrategy, {
     session: false,
   }),
   authorizationMiddleware("user"),
@@ -207,7 +208,7 @@ io.engine.use((req: any, res: any, next: any) => {
   // This middleware is used to authenticate the socket connection
   const isHandshake = req._query.sid === undefined;
   if (isHandshake) {
-    passport.authenticate(adfsEnabled ? ["adfs-jwt"] : ["jwt"], {
+    passport.authenticate(primaryJwtStrategy, {
       session: false,
     })(
       req,
