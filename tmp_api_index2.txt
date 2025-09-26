@@ -1,0 +1,30 @@
+  cors: {
+    origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
+    credentials: true,
+  },
+});
+io.engine.use((req: any, res: any, next: any) => {
+  // This middleware is used to authenticate the socket connection
+  const isHandshake = req._query.sid === undefined;
+  if (isHandshake) {
+    passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
+      session: false,
+    })(
+      req,
+      res,
+      next
+    );
+  } else {
+    next();
+  }
+});
+io.on("connection", socketHandler);
+
+// Start the server
+const port = Number(process.env.PORT) || 3001;
+
+server.listen(port, '0.0.0.0', () => {
+  console.log(
+    `AR-View API listening on port ${port}. http://0.0.0.0:${port}`
+  );
+});
