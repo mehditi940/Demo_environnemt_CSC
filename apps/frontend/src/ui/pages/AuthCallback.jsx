@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { completeLogin } from "../../service/oidcClient";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
+  const processedRef = useRef(false);
 
   useEffect(() => {
+    if (processedRef.current) return;
+    processedRef.current = true;
     (async () => {
       try {
         await completeLogin();

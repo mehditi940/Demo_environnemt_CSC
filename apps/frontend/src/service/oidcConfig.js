@@ -3,13 +3,20 @@
 
 // Optional: allow bypassing metadata discovery (common AD FS CORS issue)
 const metadataUrl = import.meta.env.VITE_OIDC_METADATA_URL;
-// If explicit endpoints provided, supply full metadata to avoid any network fetch
+// Always prefer the API proxy for token exchange to avoid AD FS CORS
 const metadata = (() => {
-  const authorization_endpoint = import.meta.env.VITE_OIDC_AUTHORIZATION_ENDPOINT;
-  const token_endpoint = import.meta.env.VITE_OIDC_TOKEN_ENDPOINT;
+  const authority = (import.meta.env.VITE_OIDC_AUTHORITY || "https://adfs.umc.local/adfs").replace(/\/$/, "");
+  const issuer = (import.meta.env.VITE_OIDC_ISSUER || authority).replace(/\/$/, "");
+  const apiBase = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+
+  // Build endpoints, allowing explicit overrides via env
+  const authorization_endpoint =
+    import.meta.env.VITE_OIDC_AUTHORIZATION_ENDPOINT || `${authority}/oauth2/authorize/`;
+  const token_endpoint =
+    import.meta.env.VITE_OIDC_TOKEN_ENDPOINT || (apiBase ? `${apiBase}/oidc/token` : undefined);
   const end_session_endpoint = import.meta.env.VITE_OIDC_END_SESSION_ENDPOINT;
-  const issuer = import.meta.env.VITE_OIDC_ISSUER || import.meta.env.VITE_OIDC_AUTHORITY;
   const jwks_uri = import.meta.env.VITE_OIDC_JWKS_URI;
+
   if (authorization_endpoint && token_endpoint && issuer) {
     return {
       authorization_endpoint,
