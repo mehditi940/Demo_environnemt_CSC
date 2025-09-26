@@ -3,19 +3,20 @@
 
 // Optional: allow bypassing metadata discovery (common AD FS CORS issue)
 const metadataUrl = import.meta.env.VITE_OIDC_METADATA_URL;
-const metadataSeed = (() => {
+// If explicit endpoints provided, supply full metadata to avoid any network fetch
+const metadata = (() => {
   const authorization_endpoint = import.meta.env.VITE_OIDC_AUTHORIZATION_ENDPOINT;
   const token_endpoint = import.meta.env.VITE_OIDC_TOKEN_ENDPOINT;
   const end_session_endpoint = import.meta.env.VITE_OIDC_END_SESSION_ENDPOINT;
   const issuer = import.meta.env.VITE_OIDC_ISSUER || import.meta.env.VITE_OIDC_AUTHORITY;
   const jwks_uri = import.meta.env.VITE_OIDC_JWKS_URI;
-  if (authorization_endpoint || token_endpoint || end_session_endpoint || issuer || jwks_uri) {
+  if (authorization_endpoint && token_endpoint && issuer) {
     return {
-      ...(authorization_endpoint ? { authorization_endpoint } : {}),
-      ...(token_endpoint ? { token_endpoint } : {}),
-      ...(end_session_endpoint ? { end_session_endpoint } : {}),
-      ...(issuer ? { issuer } : {}),
-      ...(jwks_uri ? { jwks_uri } : {}),
+      authorization_endpoint,
+      token_endpoint,
+      end_session_endpoint,
+      issuer,
+      jwks_uri,
     };
   }
   return undefined;
@@ -30,9 +31,9 @@ export const oidcConfig = {
     import.meta.env.VITE_OIDC_REDIRECT_URI || "http://localhost:5173/auth/callback",
   response_type: "code",
   scope: import.meta.env.VITE_OIDC_SCOPE || "openid profile",
-  // AD FS often blocks discovery CORS; these help oidc-client-ts proceed
-  ...(metadataUrl ? { metadataUrl } : {}),
-  ...(metadataSeed ? { metadataSeed } : {}),
+  // AD FS often blocks discovery CORS; provide metadata or metadataUrl
+  ...(metadata ? { metadata } : {}),
+  ...(metadataUrl && !metadata ? { metadataUrl } : {}),
   // AD FS userinfo endpoint may be unavailable; allow opt-out via env
   loadUserInfo: (import.meta.env.VITE_OIDC_LOAD_USERINFO || "false").toLowerCase() === "true",
 };
