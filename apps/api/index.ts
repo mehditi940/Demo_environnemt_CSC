@@ -20,6 +20,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { socketHandler } from "./socket/socketHandler";
 import connectionRouter from "./routes/connection/connectionRouter";
+import oidcProxyRouter from "./routes/auth/oidcProxyRouter";
 
 //Check envoirment variables
 if (!process.env.PORT) {
@@ -193,6 +194,7 @@ app.use("/auth", authRouter);
 app.use("/patient", patientRouter);
 app.use("/room", roomRouter);
 app.use("/connection", connectionRouter);
+app.use("/oidc", oidcProxyRouter);
 
 // Socket.io setup
 const io = new Server(server, {

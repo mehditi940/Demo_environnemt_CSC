@@ -29,15 +29,15 @@ export const oidcConfig = {
     import.meta.env.VITE_OIDC_CLIENT_ID || "f4d9aaf4-ee50-47c0-b19c-f6e913332eb7",
   redirect_uri:
     import.meta.env.VITE_OIDC_REDIRECT_URI || "http://localhost:5173/auth/callback",
-  // Gebruik implicit flow om CORS calls naar het token endpoint te vermijden bij AD FS
-  response_type: "id_token token",
+  // Authorization Code + PKCE (vereist door oidc-client-ts)
+  response_type: "code",
   scope: import.meta.env.VITE_OIDC_SCOPE || "openid profile",
   // AD FS often blocks discovery CORS; provide metadata or metadataUrl
   ...(metadata ? { metadata } : {}),
   ...(metadataUrl && !metadata ? { metadataUrl } : {}),
   // AD FS userinfo endpoint may be unavailable; allow opt-out via env
   loadUserInfo: (import.meta.env.VITE_OIDC_LOAD_USERINFO || "false").toLowerCase() === "true",
-  // Optioneel: silent renew via authorize endpoint (geen token endpoint)
+  // Silent renew blijft mogelijk via authorize endpoint
   automaticSilentRenew: true,
 };
 
