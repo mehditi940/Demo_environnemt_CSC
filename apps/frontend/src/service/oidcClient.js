@@ -14,7 +14,33 @@ const manager = new UserManager({
 });
 
 export async function loginWithAdfs() {
-  await manager.signinRedirect();
+  try {
+    if (import.meta.env.VITE_OIDC_DEBUG === "true") {
+      // Useful to verify at runtime what we will use for redirect
+      // eslint-disable-next-line no-console
+      console.log("OIDC settings", manager.settings);
+    }
+    await manager.signinRedirect();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error("signinRedirect error", e);
+    alert("Kon niet doorverwijzen naar AD FS. Open de console voor details.");
+  }
+}
+
+export function dumpOidcEnv() {
+  // Quick helper to inspect env-derived settings in the browser console
+  // eslint-disable-next-line no-console
+  console.log({
+    VITE_OIDC_AUTHORITY: import.meta.env.VITE_OIDC_AUTHORITY,
+    VITE_OIDC_CLIENT_ID: import.meta.env.VITE_OIDC_CLIENT_ID,
+    VITE_OIDC_REDIRECT_URI: import.meta.env.VITE_OIDC_REDIRECT_URI,
+    VITE_OIDC_AUTHORIZATION_ENDPOINT: import.meta.env.VITE_OIDC_AUTHORIZATION_ENDPOINT,
+    VITE_OIDC_TOKEN_ENDPOINT: import.meta.env.VITE_OIDC_TOKEN_ENDPOINT,
+    VITE_OIDC_END_SESSION_ENDPOINT: import.meta.env.VITE_OIDC_END_SESSION_ENDPOINT,
+    VITE_OIDC_ISSUER: import.meta.env.VITE_OIDC_ISSUER,
+    VITE_OIDC_JWKS_URI: import.meta.env.VITE_OIDC_JWKS_URI,
+  });
 }
 
 export async function completeLogin() {
@@ -38,4 +64,3 @@ export async function logoutAdfs() {
 }
 
 export default manager;
-
