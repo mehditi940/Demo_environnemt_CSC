@@ -39,3 +39,23 @@ Notes
 - Do not use https://0.0.0.0 for URLs; 0.0.0.0 is a bind address, not reachable from browsers. Use your host IP or localhost.
 - JWT fallback (local users) is disabled when ADFS env vars are present. Admin endpoints still manage local app users/roles for authorization.
 
+
+Optional frontend OIDC overrides (avoid discovery CORS)
+- Some AD FS setups block CORS on `/.well-known/openid-configuration`, which prevents the SPA from discovering endpoints before redirecting.
+- In that case, add one of the following to `apps/frontend/.env`:
+  - Use discovery directly (if allowed):
+    - `VITE_OIDC_METADATA_URL=https://adfs.umc.local/adfs/.well-known/openid-configuration`
+  - Or bypass discovery with explicit endpoints (recommended):
+    - `VITE_OIDC_AUTHORIZATION_ENDPOINT=https://adfs.umc.local/adfs/oauth2/authorize/`
+    - `VITE_OIDC_TOKEN_ENDPOINT=https://adfs.umc.local/adfs/oauth2/token/`
+    - `VITE_OIDC_END_SESSION_ENDPOINT=https://adfs.umc.local/adfs/oauth2/logout/`
+    - `VITE_OIDC_ISSUER=https://adfs.umc.local/adfs`
+    - `VITE_OIDC_JWKS_URI=https://adfs.umc.local/adfs/discovery/keys`
+  - Optionally disable userinfo call (AD FS may not expose it):
+    - `VITE_OIDC_LOAD_USERINFO=false`
+
+Troubleshooting
+- Button does nothing: open browser console.
+  - If you see a CORS error to `/.well-known/openid-configuration`, use the overrides above.
+  - If there is a TLS/certificate error on your AD FS hostname, the discovery fetch will fail; explicit endpoints avoid the pre-fetch and perform a top-level redirect.
+- After login you get an error page: ensure the Redirect URI in AD FS exactly matches `VITE_OIDC_REDIRECT_URI` (scheme/host/port/path).
