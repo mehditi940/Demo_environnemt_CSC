@@ -17,3 +17,7 @@ Follow these steps when recreating the Application Group:
 This single Application Group allows the SPA to authenticate users via ADFS and call the API with the same access token. You only need a **Native application** entry when you ship a desktop/mobile client that can use the system browser and store secrets locally. You only need a standalone **Server application** when you run a confidential backend that authenticates directly (client credentials).
 
 If you must rotate the credentials for the API, add a certificate or client secret under the **Web API** section of the same Application Group—there is no need to create a separate Application Group for the API. This keeps management simple and matches the expectations of the code in this repository.
+
+## Disabling the legacy local login
+
+The repository now disables the email/password flow automatically when the ADFS environment variables are set. Leave `JWT_SECRET` undefined in `apps/api/.env` and keep `VITE_ENABLE_LOCAL_LOGIN=false` (the default) in `apps/frontend/.env` to hide the legacy form. If you ever need the old login back for debugging, set those two values and the `/auth/login` and `/auth/register` routes will become available again.

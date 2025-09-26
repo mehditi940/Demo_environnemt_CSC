@@ -18,6 +18,8 @@ const LoginForm = () => {
     password: false
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const localLoginEnabled =
+    (import.meta.env.VITE_ENABLE_LOCAL_LOGIN || '').toLowerCase() === 'true';
   const navigate = useNavigate();
   const { login, currentUser } = useContext(AuthContext);
 
@@ -62,6 +64,10 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!localLoginEnabled) {
+      loginWithAdfs();
+      return;
+    }
     setIsSubmitting(true);
     setErrors({ email: '', password: '', general: '' });
     
@@ -103,71 +109,91 @@ const LoginForm = () => {
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>E-mailadres</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            onBlur={() => handleBlur('email')}
-            required
-            placeholder="Voer je e-mailadres in"
-            className={touched.email && errors.email ? 'input-error' : ''}
-            autoComplete="username"
-          />
-          {touched.email && errors.email && (
-            <span className="error-message">{errors.email}</span>
-          )}
-        </div>
+      <form
+        className="login-form"
+        onSubmit={handleSubmit}
+        noValidate={!localLoginEnabled}
+      >
+        {localLoginEnabled && (
+          <>
+            <div className="form-group">
+              <label>E-mailadres</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                onBlur={() => handleBlur('email')}
+                required
+                placeholder="Voer je e-mailadres in"
+                className={touched.email && errors.email ? 'input-error' : ''}
+                autoComplete="username"
+              />
+              {touched.email && errors.email && (
+                <span className="error-message">{errors.email}</span>
+              )}
+            </div>
 
-        <div className="form-group">
-          <label>Wachtwoord</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            onBlur={() => handleBlur('password')}
-            required
-            placeholder="Voer je wachtwoord in"
-            className={touched.password && errors.password ? 'input-error' : ''}
-            autoComplete="current-password"
-          />
-          {touched.password && errors.password && (
-            <span className="error-message">{errors.password}</span>
-          )}
-        </div>
+            <div className="form-group">
+              <label>Wachtwoord</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                onBlur={() => handleBlur('password')}
+                required
+                placeholder="Voer je wachtwoord in"
+                className={touched.password && errors.password ? 'input-error' : ''}
+                autoComplete="current-password"
+              />
+              {touched.password && errors.password && (
+                <span className="error-message">{errors.password}</span>
+              )}
+            </div>
 
-        {errors.general && (
-          <div className="error-message general-error">
-            <p>{errors.general}</p>
-          </div>
+            {errors.general && (
+              <div className="error-message general-error">
+                <p>{errors.general}</p>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="spinner"></span>
+                  Inloggen...
+                </>
+              ) : 'Inloggen'}
+            </button>
+
+            <div style={{ textAlign: 'center', margin: '12px 0', color: '#888' }}>
+              of
+            </div>
+          </>
         )}
 
         <button
-          type="submit"
+          type={localLoginEnabled ? 'button' : 'submit'}
           className="login-button"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <span className="spinner"></span>
-              Inloggen...
-            </>
-          ) : "Inloggen"}
-        </button>
-
-        <div style={{ textAlign: 'center', margin: '12px 0', color: '#888' }}>of</div>
-
-        <button
-          type="button"
-          className="login-button"
-          onClick={() => loginWithAdfs()}
+          onClick={() => {
+            if (localLoginEnabled) {
+              loginWithAdfs();
+            }
+          }}
         >
           Inloggen met AD (ADFS)
         </button>
+
+        {!localLoginEnabled && (
+          <p style={{ textAlign: 'center', marginTop: '12px', color: '#888' }}>
+            Active Directory-inloggen is verplicht voor deze omgeving.
+          </p>
+        )}
       </form>
     </div>
   );

@@ -12,6 +12,11 @@ import { connectionSchema } from "../../schemas/connection";
 import { roomSchema, usersToRooms } from "../../schemas/room";
 
 const authRouter = Router();
+const adfsEnabled = Boolean(
+  process.env.ADFS_OIDC_JWKS_URI &&
+    process.env.ADFS_OIDC_ISSUER &&
+    process.env.ADFS_OIDC_AUDIENCE
+);
 
 /**
  * @swagger
@@ -338,30 +343,40 @@ const authRouter = Router();
  */
 // Login Route
 type LoginRequestBody = Pick<User, "email" | "password">;
-authRouter.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err: Error, user: User) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const body = req.body as LoginRequestBody;
-    if (!body.email || !body.password) {
-      return res.status(400).json({ message: "Invalid input" });
-    }
-
-    req.login(user, { session: false }, (err) => {
+if (!adfsEnabled) {
+  authRouter.post("/login", (req, res, next) => {
+    passport.authenticate("local", (err: Error, user: User) => {
       if (err) {
-        res.send(err);
+        return next(err);
+      }
+      if (!user) {
+        return res.status(400).json({ message: "Invalid credentials" });
       }
 
-      const token = jwt.sign(user, process.env.JWT_SECRET!);
-      return res.json({ token });
+      const body = req.body as LoginRequestBody;
+      if (!body.email || !body.password) {
+        return res.status(400).json({ message: "Invalid input" });
+      }
+
+      req.login(user, { session: false }, (err) => {
+        if (err) {
+          res.send(err);
+          return;
+        }
+
+        const token = jwt.sign(user, process.env.JWT_SECRET!);
+        res.json({ token });
+      });
+    })(req, res, next);
+  });
+} else {
+  authRouter.post("/login", (_req, res) => {
+    res.status(404).json({
+      message:
+        "Local login is disabled because AD FS authentication is configured.",
     });
-  })(req, res, next);
-});
+  });
+}
 
 // Register Route
 // Register Route
@@ -369,61 +384,74 @@ type RegisterRequestBody = Pick<
   User,
   "firstName" | "email" | "password" | "lastName" | "role"
 >;
-authRouter.post("/register", async (req, res) => {
-  const body = req.body as RegisterRequestBody;
+if (!adfsEnabled) {
+  authRouter.post("/register", async (req, res) => {
+    const body = req.body as RegisterRequestBody;
 
-  if (
-    !body.firstName ||
-    !body.lastName ||
-    !body.email ||
-    !body.password
-  ) {
-    res.status(400).json({ message: "Invalid input" });
-    return;
-  }
-
-  try {
-    const userCount = await db.$count(userSchema);
-    
-    // Als er nog geen users zijn, maak dan een super-admin aan
-    const role = userCount === 0 ? "super-admin" : (body.role || "user");
-
-    // Check for duplicate email before inserting
-    const existing = await db
-      .select({ id: userSchema.id })
-      .from(userSchema)
-      .where(eq(userSchema.email, body.email));
-    if (existing.length > 0) {
-      res.status(409).json({ message: "Email already in use" });
+    if (
+      !body.firstName ||
+      !body.lastName ||
+      !body.email ||
+      !body.password
+    ) {
+      res.status(400).json({ message: "Invalid input" });
       return;
     }
 
-    const { hash, salt } = await hashPassword(req.body.password);
-    await db.insert(userSchema).values({
-      email: body.email,
-      password: hash,
-      salt: salt,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      role: role,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-    res.status(201).send({ message: "User registered successfully" });
-  } catch (error) {
-    console.error("Registration error:", error);
-    const message =
-      error instanceof Error &&
-      /unique constraint|SQLITE_CONSTRAINT_UNIQUE/i.test(error.message)
-        ? "Email already in use"
-        : "Invalid input";
-    const status = message === "Email already in use" ? 409 : 400;
-    res.status(status).json({
-      message,
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-});
+    try {
+      const userCount = await db.$count(userSchema);
+
+      // Als er nog geen users zijn, maak dan een super-admin aan
+      const role = userCount === 0 ? "super-admin" : body.role || "user";
+
+      // Check for duplicate email before inserting
+      const existing = await db
+        .select({ id: userSchema.id })
+        .from(userSchema)
+        .where(eq(userSchema.email, body.email));
+      if (existing.length > 0) {
+        res.status(409).json({ message: "Email already in use" });
+        return;
+      }
+
+      const { hash, salt } = await hashPassword(req.body.password);
+      await db.insert(userSchema).values({
+        email: body.email,
+        password: hash,
+        salt: salt,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        role: role,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      res.status(201).send({ message: "User registered successfully" });
+    } catch (error) {
+      console.error("Registration error:", error);
+      const message =
+        error instanceof Error &&
+        /unique constraint|SQLITE_CONSTRAINT_UNIQUE/i.test(error.message)
+          ? "Email already in use"
+          : "Invalid input";
+      const status = message === "Email already in use" ? 409 : 400;
+      res.status(status).json({
+        message,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+} else {
+  authRouter.post(
+    "/register",
+    passport.authenticate("adfs-jwt", { session: false }),
+    authorizationMiddleware("super-admin"),
+    async (_req, res) => {
+      res.status(403).json({
+        message: "User registration is managed via Active Directory.",
+      });
+    }
+  );
+}
 
 // Me Route
 authRouter.get(

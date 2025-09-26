@@ -6,16 +6,25 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const localLoginEnabled =
+    (import.meta.env.VITE_ENABLE_LOCAL_LOGIN || "").toLowerCase() === "true";
 
   const login = async (email, password) => {
+    if (!localLoginEnabled) {
+      return {
+        success: false,
+        message: "Local login is disabled in this environment.",
+      };
+    }
+
     const result = await handleLogin(email, password);
 
     if (result.success) {
-      
+
       const userResponse = await getUser();
 
       if (userResponse.success) {
-        setCurrentUser(userResponse.data); 
+        setCurrentUser(userResponse.data);
         return { success: true, data: userResponse.data };
       } else {
         return { success: false, message: "Gebruiker ophalen mislukt" };
@@ -27,13 +36,12 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const checkUserSession = async () => {
- 
-        const result = await getUser();
-        if (result.success) {
-          setCurrentUser(result);
-          console.log(result)
+      const result = await getUser();
+      if (result.success) {
+        setCurrentUser(result.data);
       }
     };
+
     checkUserSession();
   }, []);
   
