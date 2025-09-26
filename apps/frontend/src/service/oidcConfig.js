@@ -12,8 +12,12 @@ const metadata = (() => {
   // Build endpoints, allowing explicit overrides via env
   const authorization_endpoint =
     import.meta.env.VITE_OIDC_AUTHORIZATION_ENDPOINT || `${authority}/oauth2/authorize/`;
-  const token_endpoint =
-    import.meta.env.VITE_OIDC_TOKEN_ENDPOINT || (apiBase ? `${apiBase}/oidc/token` : undefined);
+
+  // Robust rule: if apiBase is available, ALWAYS use same-origin proxy to avoid browser CORS.
+  // Only fall back to an explicit VITE_OIDC_TOKEN_ENDPOINT when apiBase is not set.
+  const token_endpoint = apiBase
+    ? `${apiBase}/oidc/token`
+    : import.meta.env.VITE_OIDC_TOKEN_ENDPOINT;
   const end_session_endpoint = import.meta.env.VITE_OIDC_END_SESSION_ENDPOINT;
   const jwks_uri = import.meta.env.VITE_OIDC_JWKS_URI;
 
