@@ -26,7 +26,7 @@ export const oidcConfig = {
   // For AD FS, authority should include '/adfs' so discovery resolves to '/adfs/.well-known/openid-configuration'
   authority: import.meta.env.VITE_OIDC_AUTHORITY || "https://adfs.umc.local/adfs",
   client_id:
-    import.meta.env.VITE_OIDC_CLIENT_ID || "288ad0b2-91c9-42ab-aec0-19bf846af35f",
+    import.meta.env.VITE_OIDC_CLIENT_ID || "f4d9aaf4-ee50-47c0-b19c-f6e913332eb7",
   redirect_uri:
     import.meta.env.VITE_OIDC_REDIRECT_URI || "http://localhost:5173/auth/callback",
   response_type: "code",
