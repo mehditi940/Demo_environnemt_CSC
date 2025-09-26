@@ -120,8 +120,7 @@ export const AuthBearerStrategy = new BearerStrategy((token, done) => {
 // Enabled when ADFS_OIDC_JWKS_URI, ADFS_OIDC_ISSUER, and ADFS_OIDC_AUDIENCE are configured.
 const hasAdfsEnv = !!(
   process.env.ADFS_OIDC_JWKS_URI &&
-  process.env.ADFS_OIDC_ISSUER &&
-  process.env.ADFS_OIDC_AUDIENCE
+  process.env.ADFS_OIDC_ISSUER
 );
 
 export const AdfsJwtStrategy = hasAdfsEnv
@@ -138,7 +137,8 @@ export const AdfsJwtStrategy = hasAdfsEnv
           jwksRequestsPerMinute: 5,
         }) as any,
         issuer: process.env.ADFS_OIDC_ISSUER!,
-        audience: process.env.ADFS_OIDC_AUDIENCE!,
+        // audience is optional; when provided can be comma-separated list
+        audience: process.env.ADFS_OIDC_AUDIENCE,
         algorithms: ["RS256", "RS384", "RS512"],
       },
       async (payload: any, cb) => {

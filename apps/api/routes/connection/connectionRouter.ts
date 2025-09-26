@@ -130,7 +130,7 @@ const connectionRouter = Router();
 // Create a connection request
 connectionRouter.post(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("adfs-jwt", { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {

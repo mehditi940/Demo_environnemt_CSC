@@ -386,7 +386,7 @@ const roomRouter = Router();
 // Create a new room
 roomRouter.post(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("adfs-jwt", { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -503,7 +503,7 @@ roomRouter.post(
 
 roomRouter.put(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("adfs-jwt", { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res, next) => {
     try {
@@ -681,7 +681,7 @@ const getRoom = async (room: Room) => {
 // Get rooms list
 roomRouter.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("adfs-jwt", { session: false }),
   authorizationMiddleware("admin"),
   async (req, res) => {
     const user = req?.user as UserInfo;
@@ -739,7 +739,7 @@ roomRouter.get(
 // Get room by ID
 roomRouter.get(
   "/:id",
-  passport.authenticate(["jwt", "bearer"], { session: false }),
+  passport.authenticate(["adfs-jwt", "bearer"], { session: false }),
   authorizationMiddleware("admin"),
   async (req, res) => {
     const user = req?.user as UserInfo;
@@ -795,7 +795,7 @@ roomRouter.get(
 // Delete room by ID
 roomRouter.delete(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("adfs-jwt", { session: false }),
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     const roomId = req.params.id;

@@ -30,8 +30,7 @@ if (!process.env.DB_FILE_NAME) {
 }
 const adfsEnabled = !!(
   process.env.ADFS_OIDC_JWKS_URI &&
-  process.env.ADFS_OIDC_ISSUER &&
-  process.env.ADFS_OIDC_AUDIENCE
+  process.env.ADFS_OIDC_ISSUER
 );
 if (!adfsEnabled && !process.env.JWT_SECRET) {
   throw new Error("Either ADFS OIDC variables or JWT_SECRET must be set.");
