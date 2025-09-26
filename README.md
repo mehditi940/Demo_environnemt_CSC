@@ -32,3 +32,9 @@ To develop all apps and packages, run the following command:
 cd ar-viewer
 npm run dev
 ```
+
+## ADFS (Active Directory) Login
+
+- This repo supports AD FS via OpenID Connect for authentication.
+- Backend validates ADFS JWTs using JWKS; local DB remains for app data.
+- See `docs/adfs-setup.md` for environment variables and setup steps.

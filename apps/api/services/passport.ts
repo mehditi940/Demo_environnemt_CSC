@@ -153,11 +153,11 @@ export const AdfsJwtStrategy = hasAdfsEnv
           const firstName = payload?.given_name || payload?.name || email || "User";
           const id = (payload?.sub || payload?.oid || payload?.sid || email || "").toString();
 
-          // Default ADFS users to role "user"; adjust with your own mapping if needed
+          // Default role for ADFS users; override with ADFS_DEFAULT_ROLE env if desired
           const user = {
             id,
             firstName,
-            role: "admin",
+            role: process.env.ADFS_DEFAULT_ROLE || "admin",
             email,
           };
           return cb(null, user);
