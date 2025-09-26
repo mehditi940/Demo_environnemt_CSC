@@ -9,8 +9,8 @@ const AuthCallback = () => {
     (async () => {
       try {
         await completeLogin();
-        // Redirect to a sensible default; adjust if needed
-        navigate("/chirurg/dashboard", { replace: true });
+        // Redirect naar admin dashboard na succesvolle login
+        navigate("/admin/dashboard", { replace: true });
       } catch (e) {
         console.error("OIDC callback error", e);
         navigate("/login", { replace: true });
@@ -22,4 +22,3 @@ const AuthCallback = () => {
 };
 
 export default AuthCallback;
-

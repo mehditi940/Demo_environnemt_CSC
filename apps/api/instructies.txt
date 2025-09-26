@@ -1,0 +1,95 @@
+Set-AdfsResponseHeaders -CORSTrustedOrigins https://192.168.174.128 https://localhost:5173
+
+
+Redirect url: https://192.168.174.128:5173/auth/callback
+
+Client ID: f4d9aaf4-ee50-47c0-b19c-f6e913332eb7
+
+https://192.168.174.128:5173 frontend
+
+api url:  http://192.168.174.128:3001
+
+
+CertificateSharingContainer                : CN=19ac1858-04e3-435a-a3fb-bddde1ba8b3a,CN=ADFS,CN=Microsoft,CN=Program
+                                             Data,DC=UMC,DC=local
+CertificateThresholdMultiplier             : 1440
+ClientCertRevocationCheck                  : None
+ContactPerson                              :
+DisplayName                                : UMC ADFS
+IntranetUseLocalClaimsProvider             : False
+ExtendedProtectionTokenCheck               : Allow
+FarmRoles                                  : Microsoft.IdentityServer.PolicyModel.Configuration.FarmRolesConfiguration
+FederationPassiveAddress                   : /adfs/ls/
+HostName                                   : adfs.umc.local
+HttpPort                                   : 80
+HttpsPort                                  : 443
+TlsClientPort                              : 49443
+Identifier                                 : http://adfs.umc.local/adfs/services/trust
+IdTokenIssuer                              : https://adfs.umc.local/adfs
+InstalledLanguage                          : en-US
+LogLevel                                   : {Errors, FailureAudits, Information, Verbose...}
+MonitoringInterval                         : 1440
+NetTcpPort                                 : 1501
+NtlmOnlySupportedClientAtProxy             : False
+OrganizationInfo                           :
+PreventTokenReplays                        : False
+ProxyTrustTokenLifetime                    : 21600
+ReplayCacheExpirationInterval              : 60
+SignedSamlRequestsRequired                 : False
+SamlMessageDeliveryWindow                  : 5
+SignSamlAuthnRequests                      : False
+SsoLifetime                                : 480
+PersistentSsoLifetimeMins                  : 129600
+KmsiLifetimeMins                           : 1440
+PersistentSsoEnabled                       : True
+PersistentSsoCutoffTime                    : 1/1/0001 1:00:00 AM
+KmsiEnabled                                : False
+LoopDetectionEnabled                       : True
+LoopDetectionTimeIntervalInSeconds         : 20
+LoopDetectionMaximumTokensIssuedInInterval : 5
+PasswordValidationDelayInMinutes           : 60
+SendClientRequestIdAsQueryStringParameter  : False
+WIASupportedUserAgents                     : {MSAuthHost/1.0/In-Domain, MSIE 6.0, MSIE 7.0, MSIE 8.0...}
+BrowserSsoSupportedUserAgents              : {Windows NT 1, Windows Phone 1}
+ExtranetLockoutThreshold                   : 2147483647
+ExtranetLockoutThresholdFamiliarLocation   : 2147483647
+ExtranetLockoutEnabled                     : False
+ExtranetLockoutMode                        : ADPasswordCounter
+BannedIpList                               : {}
+ExtranetObservationWindow                  : 00:30:00
+GlobalRelyingPartyClaimsIssuancePolicy     : c:[Type == "http://schemas.microsoft.com/2012/01/devicecontext/claims/isre
+                                             gistereduser"] => issue(claim = c);c:[Type ==
+                                             "http://schemas.microsoft.com/2012/01/devicecontext/claims/identifier"]
+                                             => issue(claim = c);
+ExtranetLockoutRequirePDC                  : True
+LocalAuthenticationTypesEnabled            : True
+RelayStateForIdpInitiatedSignOnEnabled     : False
+BrowserSsoEnabled                          : True
+DelegateServiceAdministration              :
+AllowSystemServiceAdministration           : False
+AllowLocalAdminsServiceAdministration      : True
+CurrentFarmBehavior                        : 4
+CurrentFarmBehaviorMinorVersion            : 3
+DeviceUsageWindowInDays                    : 14
+EnableIdpInitiatedSignonPage               : False
+IgnoreTokenBinding                         : False
+WiaEvaluationMethod                        : WiaUserAgentDetection
+EnableOauthLogout                          : True
+EnableOauthDeviceFlow                      : True
+AdditionalErrorPageInfo                    : Private
+PromptLoginFederation                      : FallbackToProtocolSpecificParameters
+PromptLoginFallbackAuthenticationType      : urn:oasis:names:tc:SAML:1.0:am:password
+PublicKeyPinningEnabled                    : False
+PublicKeyPinningUri                        :
+PublicKeyPrimary                           :
+PublicKeySecondary                         :
+AdditionalPublicKeys                       : {}
+CORSEnabled                                : False
+CORSTrustedOrigins                         : {}
+SendLogsCacheSizeInMb                      : 128
+SendLogsEnabled                            : False
+ResponseHeadersEnabled                     : True
+ResponseHeaders                            : {[Strict-Transport-Security, max-age = 31536000], [X-Frame-Options,
+                                             DENY], [X-Content-Type-Options, nosniff], [X-XSS-Protection, 1;
+                                             mode=block]...}
+WindowsHelloKeyVerification                : A is dit allemaal goed?
