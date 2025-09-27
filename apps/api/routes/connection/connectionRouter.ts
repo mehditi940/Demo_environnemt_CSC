@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Router } from "express";
 import passport from "passport";
+import { getAuthMiddleware } from "../../services/passportAuth";
 import db from "../../schemas/db";
 import { authorizationMiddleware } from "../../services/authorizationMiddleware";
 import { patientInsertSchema, patientSchema } from "../../schemas/patient";
@@ -9,6 +10,8 @@ import { UserInfo } from "../../schemas/user";
 import { ConnectionResponse, connectionSchema } from "../../schemas/connection";
 
 const connectionRouter = Router();
+
+const requireAuth = getAuthMiddleware();
 
 /**
  * @swagger
@@ -130,7 +133,7 @@ const connectionRouter = Router();
 // Create a connection request
 connectionRouter.post(
   "/",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {

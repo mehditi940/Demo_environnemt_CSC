@@ -1,12 +1,14 @@
 import "dotenv/config";
 import { Router } from "express";
-import passport from "passport";
+import { getAuthMiddleware } from "../../services/passportAuth";
 import db from "../../schemas/db";
 import { authorizationMiddleware } from "../../services/authorizationMiddleware";
 import { Patient, patientInsertSchema, patientSchema } from "../../schemas/patient";
 import { count, eq } from "drizzle-orm";
 
 const patientRouter = Router();
+
+const requireAuth = getAuthMiddleware();
 
 /**
  * @swagger
@@ -257,7 +259,7 @@ const patientRouter = Router();
 // Create a new patient
 patientRouter.post(
   "/",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -297,7 +299,7 @@ patientRouter.post(
 // Update a patient
 patientRouter.put(
   "/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -382,7 +384,7 @@ patientRouter.put(
 // Delete a patient
 patientRouter.delete(
   "/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -416,7 +418,7 @@ patientRouter.delete(
 // Get patients list
 patientRouter.get(
   "/",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("admin"),
   async (req, res) => {
     try {
@@ -441,7 +443,7 @@ patientRouter.get(
 // Get a patient
 patientRouter.get(
   "/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("admin"),
   async (req, res) => {
     try {

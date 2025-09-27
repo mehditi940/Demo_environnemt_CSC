@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { Router } from "express";
-import passport from "passport";
+import { getAuthMiddleware } from "../../services/passportAuth";
 import db from "../../schemas/db";
 import { mkdirp } from "mkdirp";
 import path from "path";
@@ -20,6 +20,9 @@ import { Patient, patientSchema } from "../../schemas/patient";
 import { eq, inArray } from "drizzle-orm";
 
 const roomRouter = Router();
+
+const requireAuth = getAuthMiddleware();
+const requireAuthOrSystem = getAuthMiddleware(["bearer"]);
 
 /**
  * @swagger
@@ -386,7 +389,7 @@ const roomRouter = Router();
 // Create a new room
 roomRouter.post(
   "/",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     try {
@@ -503,7 +506,7 @@ roomRouter.post(
 
 roomRouter.put(
   "/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res, next) => {
     try {
@@ -681,7 +684,7 @@ const getRoom = async (room: Room) => {
 // Get rooms list
 roomRouter.get(
   "/",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("admin"),
   async (req, res) => {
     const user = req?.user as UserInfo;
@@ -739,7 +742,7 @@ roomRouter.get(
 // Get room by ID
 roomRouter.get(
   "/:id",
-  passport.authenticate(["adfs-jwt", "bearer"], { session: false }),
+  requireAuthOrSystem,
   authorizationMiddleware("admin"),
   async (req, res) => {
     const user = req?.user as UserInfo;
@@ -795,7 +798,7 @@ roomRouter.get(
 // Delete room by ID
 roomRouter.delete(
   "/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   authorizationMiddleware("super-admin"),
   async (req, res) => {
     const roomId = req.params.id;

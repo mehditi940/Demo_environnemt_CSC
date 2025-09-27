@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Router } from "express";
 import { User, UserInfo, userSchema } from "../../schemas/user";
 import passport from "passport";
+import { getAuthMiddleware } from "../../services/passportAuth";
 import jwt from "jsonwebtoken";
 import db from "../../schemas/db";
 import { hashPassword } from "../../utils/passwordHash";
@@ -12,6 +13,8 @@ import { connectionSchema } from "../../schemas/connection";
 import { roomSchema, usersToRooms } from "../../schemas/room";
 
 const authRouter = Router();
+
+const requireAuth = getAuthMiddleware();
 
 /**
  * @swagger
@@ -428,7 +431,7 @@ authRouter.post("/register", async (req, res) => {
 // Me Route
 authRouter.get(
   "/me",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   (req, res) => {
     res.status(200).json(req.user);
   }
@@ -438,7 +441,7 @@ authRouter.get(
 type ChangePasswordRequestBody = Pick<User, "password"> & { userId: string };
 authRouter.post(
   "/change-password",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     const body = req.body as ChangePasswordRequestBody;
     const user = req.user as UserInfo;
@@ -473,7 +476,7 @@ authRouter.post(
 type ChangePasswordByEmailRequestBody = Pick<User, "password" | "email">;
 authRouter.post(
   "/change-password-by-email",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     const body = req.body as ChangePasswordByEmailRequestBody;
     const user = req.user as UserInfo;
@@ -506,7 +509,7 @@ authRouter.post(
 
 authRouter.delete(
   "/account/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     try {
       const requestingUser = req.user as UserInfo;
@@ -578,7 +581,7 @@ authRouter.delete(
 //Get user by email Route
 authRouter.get(
   "/account/:email",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     const user = req.user as UserInfo;
     const email = req.params.email;
@@ -614,7 +617,7 @@ authRouter.get(
 //Get users list Route
 authRouter.get(
   "/users",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     const user = req.user as UserInfo;
     if (user.role !== "super-admin") {
@@ -644,7 +647,7 @@ authRouter.get(
 
 authRouter.get(
   "/account/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     const user = req.user as UserInfo;
     const id = req.params.id;
@@ -744,7 +747,7 @@ type UpdateUserRequestBody = Partial<Pick<User, "firstName" | "lastName" | "emai
 
 authRouter.put(
   "/account/:id",
-  passport.authenticate("adfs-jwt", { session: false }),
+  requireAuth,
   async (req, res) => {
     try {
       const requestingUser = req.user as UserInfo;

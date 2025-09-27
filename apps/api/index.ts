@@ -12,6 +12,7 @@ import {
   AdfsJwtStrategy,
 } from "./services/passport";
 import passport from "passport";
+import { getAuthMiddleware } from "./services/passportAuth";
 import cors from "cors";
 import patientRouter from "./routes/patient/patientRouter";
 import roomRouter from "./routes/room/roomRouter";
@@ -53,6 +54,8 @@ if (!process.env.STUN_SERVERS) {
 //Initialize express app and server
 export const app = express();
 export const server = createServer(app);
+
+const requireAuth = getAuthMiddleware();
 
 // CORS middleware
 // Support multiple allowed origins via comma-separated env (FRONTEND_URL or FRONTEND_URLS)
@@ -182,9 +185,7 @@ app.get("/", (req, res) => {
  */
 app.use(
   "/static",
-  passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
-    session: false,
-  }),
+  requireAuth,
   authorizationMiddleware("user"),
   express.static(process.env.STORAGE_PATH)
 );
@@ -207,9 +208,7 @@ io.engine.use((req: any, res: any, next: any) => {
   // This middleware is used to authenticate the socket connection
   const isHandshake = req._query.sid === undefined;
   if (isHandshake) {
-    passport.authenticate(AdfsJwtStrategy ? ["adfs-jwt"] : ["jwt"], {
-      session: false,
-    })(
+    requireAuth(
       req,
       res,
       next

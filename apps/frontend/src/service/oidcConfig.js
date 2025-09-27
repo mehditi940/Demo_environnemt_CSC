@@ -1,4 +1,4 @@
-// OIDC (AD FS) configuration for the SPA. Uses Vite env vars.
+﻿// OIDC (AD FS) configuration for the SPA. Uses Vite env vars.
 // Note: Never put a client secret in the frontend.
 
 // Optional: allow bypassing metadata discovery (common AD FS CORS issue)
@@ -51,4 +51,5 @@ export const oidcConfig = {
   // Silent renew blijft mogelijk via authorize endpoint
   automaticSilentRenew: true,
 };
+
 
