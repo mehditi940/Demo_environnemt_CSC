@@ -7,13 +7,14 @@
 
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* UMC Utrecht font-family */
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color-scheme: light;
+  color: var(--black-color);
+  background-color: var(--background-main);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -22,7 +23,7 @@
 }
 
 :root {
-  --background-main: #f2f2f2;
+  --background-main: #f8f9fa;
   --primary-color: #1191FA;
   --secondary-color: #004285;
   --accent-color: #fc6039;
@@ -38,11 +39,21 @@
   --light-grey-color: #1976D2;
   --border-color: #e1e1e1;
   --btn-hover-color: #de5331;
-  /* Fonts */
-  --font-family: 'Arial, sans-serif';
-  --font-size-small: 0.875rem;
-  --font-size-medium: 1rem;
-  --font-size-large: 1.5rem;
+  /* UMC Utrecht Typography */
+  --font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Arial, sans-serif;
+  --font-size-small: 0.875rem;    /* 14px */
+  --font-size-medium: 1rem;       /* 16px */
+  --font-size-large: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;        /* 20px */
+  --font-size-2xl: 1.5rem;        /* 24px */
+  --font-size-3xl: 2rem;          /* 32px */
+  --font-size-4xl: 2.5rem;        /* 40px */
+  
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
   /* Afstand en marges */
   --spacing-small: 8px;
@@ -63,30 +74,41 @@
 
 
 
-/* Footer
-a {
-  font-weight: 700;
-  color: #770101;
-  text-decoration: inherit;
-  font-family: "Noto Sans Arabic", serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+/* UMC Utrecht Footer Links */
+.footer a {
+  font-weight: var(--font-weight-bold);
+  color: var(--accent-color);
+  text-decoration: none;
+  font-family: var(--font-family);
+  transition: color var(--transition-duration) var(--transition-ease);
 }
-/* a:hover {
-  color: #770101;
-} */
+
+.footer a:hover {
+  color: var(--btn-hover-color);
+}
 
 
-label,
+/* UMC Utrecht Form Elements */
 input,
-strong,
 textarea,
-select,
+select {
+  font-family: var(--font-family);
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-normal);
+  color: var(--black-color);
+  line-height: 1.5;
+}
+
+strong {
+  font-weight: var(--font-weight-bold);
+  color: var(--black-color);
+  font-family: var(--font-family);
+}
+
 ul,
-ol{
-color : #000000 !important; 
+ol {
+  font-family: var(--font-family);
+  color: var(--black-color);
 }
 body {
   margin: 0;
@@ -95,22 +117,68 @@ body {
   min-height: 100vh;
 }
 
+/* UMC Utrecht Typography Hierarchy */
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: var(--font-size-4xl); /* 2.5rem / 40px */
+  font-weight: var(--font-weight-bold); /* 700 */
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  font-family: var(--font-family);
+  color: var(--secondary-color);
 }
 
+h2 {
+  font-size: var(--font-size-3xl); /* 2rem / 32px */
+  font-weight: var(--font-weight-bold); /* 700 */
+  line-height: 1.3;
+  margin-bottom: 0.875rem;
+  font-family: var(--font-family);
+}
+
+h3 {
+  font-size: var(--font-size-2xl); /* 1.5rem / 24px */
+  font-weight: var(--font-weight-bold); /* 700 */
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+  font-family: var(--font-family);
+}
+
+h4 {
+  font-size: var(--font-size-xl); /* 1.25rem / 20px */
+  font-weight: var(--font-weight-semibold); /* 600 */
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-family);
+}
+
+h5 {
+  font-size: var(--font-size-large); /* 1.125rem / 18px */
+  font-weight: var(--font-weight-semibold); /* 600 */
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-family);
+}
+
+h6 {
+  font-size: var(--font-size-medium); /* 1rem / 16px */
+  font-weight: var(--font-weight-semibold); /* 600 */
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-family);
+}
+
+/* UMC Utrecht Button Styling */
 button {
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
+  font-size: var(--font-size-medium);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
   background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-  /* width: 20% !important; */
+  transition: all var(--transition-duration) var(--transition-ease);
+  line-height: 1.2;
 }
 button:hover {
   border-color: #770101;
@@ -131,39 +199,50 @@ button:focus-visible {
   }
 }
 
-a{
-  font-weight: 700;
+/* Remove duplicate a styling - already handled above */
+
+
+/* UMC Utrecht Body Text */
+p {
+  font-size: var(--font-size-medium);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-normal);
 }
 
-
-h1,
-h2,
-h3{
-  color: var(--black-color);
-    font-family: "Noto Sans Arabic", serif !important;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
-    font-variation-settings:
-      "wdth" 100;
-      direction: rtl;
-
-  
+a {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-semibold);
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color var(--transition-duration) var(--transition-ease);
 }
 
-label{
-  direction: rtl;
+a:hover {
+  color: var(--hover-color);
 }
 
-p,
-a,
-li,
-label{
-  font-family: "Roboto", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+li {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-medium);
+  line-height: 1.5;
+}
 
+label {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Small text for captions, footnotes, etc. */
+small {
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-normal);
 }

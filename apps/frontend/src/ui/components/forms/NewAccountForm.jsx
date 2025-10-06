@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import '../../styles/components/forms/NewAccountForm.css'
+import FormWrapper from './common/FormWrapper'
+import InputField from './common/InputField'
 import { getAllUsers, handleUserRegistration } from '../../../business/authManager'
 import { useNavigate } from 'react-router-dom'
 import { useNotification } from '../../../context/NotificationContext'
@@ -78,7 +80,7 @@ const handleSubmit = async (e) => {
       firstName,
       lastName,
       password,
-      role: 'admin',
+      role: 'user',
     }
 
     console.log('Nieuwe gebruiker:', newUser);
@@ -96,86 +98,38 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="new-account-container">
-      <form className="new-account-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Voornaam</label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-            placeholder="Voer de voornaam in"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Achternaam</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-            placeholder="Voer de achternaam in"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            placeholder="Voer het emailadres in"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Wachtwoord</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Voer het wachtwoord in"
-          />
-        </div>
-        <PasswordValidationList password={password}/>
-
-        <div className="form-group">
-          <label>Herhaal wachtwoord</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            placeholder="Herhaal het wachtwoord"
-          />
-        </div>
-
+      <div className="register-layout">
+        <div className="register-right" style={{gridColumn:'1 / -1'}}>
+          <FormWrapper onSubmit={handleSubmit}>
+          <div className="uf-grid-2">
+            <InputField label="Voornaam" value={firstName} onChange={(e)=>setFirstName(e.target.value)} placeholder="Voer de voornaam in" required />
+            <InputField label="Achternaam" value={lastName} onChange={(e)=>setLastName(e.target.value)} placeholder="Voer de achternaam in" required />
+          </div>
+        <InputField label="Email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Voer het emailadres in" required />
+        <InputField label="Wachtwoord" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Voer het wachtwoord in" required />
+          <PasswordValidationList password={password}/>
+        <InputField label="Herhaal wachtwoord" type="password" value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)} placeholder="Herhaal het wachtwoord" required />
         {error && <p className="form-error">{error}</p>}
-
-        <button type="submit" className="new-account-button">
-          Account aanmaken
-        </button>
-      </form>
+        <div className="uf-actions">
+          <button type="submit" className="uf-button uf-button-primary">Gebruiker aanmaken</button>
+        </div>
+          </FormWrapper>
+        </div>
+      </div>
 
       {/* Custom confirm pop-up */}
       {showConfirm && (
-        <div className="modal-overlay">
+        <div className="modal-overlay" role="dialog" aria-modal="true">
           <div className="modal-content">
-            <h3>Bevestig accountgegevens</h3>
+            <h3 className="modal-title">Bevestig accountgegevens</h3>
+            <p className="modal-sub">Controleer onderstaande gegevens voordat je het account aanmaakt.</p>
             <p><strong>Voornaam:</strong> {firstName}</p>
             <p><strong>Achternaam:</strong> {lastName}</p>
             <p><strong>Email:</strong> {email}</p>
 
-            <div className="modal-actions">
-              <button className="confirm-button" onClick={confirmSubmit}>
-                Bevestigen
-              </button>
-              <button className="cancel-button" onClick={() => setShowConfirm(false)}>
-                Annuleren
-              </button>
+            <div className="modal-actions modal-actions--right">
+              <button className="cancel-button" onClick={() => setShowConfirm(false)}>Annuleren</button>
+              <button className="confirm-button" onClick={confirmSubmit}>Bevestigen</button>
             </div>
           </div>
         </div>

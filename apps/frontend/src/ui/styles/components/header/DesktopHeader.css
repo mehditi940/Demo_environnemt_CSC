@@ -5,75 +5,37 @@
     z-index: 1000;
     transition: all 0.3s, box-shadow 0.3s, padding 0.3s;
     background-color: var(--white-color); /* Standaard witte achtergrond */
-    padding: 20px 45px; /* Standaard grotere padding */
+    padding: 18px 32px; /* dikker navbar */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06); /* constante subtiele schaduw onderkant */
 
     
 }
 
 /* Stijl bij scroll */
 .desktop-header.scrolled {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Schaduw bij scrollen */
-    padding: 10px 25px; /* Maak de header kleiner wanneer er gescrold is */
-    background-color: #000000c9;
-    .nav-link {
-        color: var(--white-color);
-
-    }
-
-    .logo-container::after {
-   
-        padding-bottom: 50px;
-    }
-
-    .icon-container i {
-       color: var(--white-color);
-    }
-
-    .nav-link::after {
-  
-        background-color: var(--orange-color); /* Kleur van de lijn */
-    }
-    
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* sterkere schaduw */
+    padding: 10px 24px; /* Maak de header kleiner wanneer er gescrold is */
+    background-color: #ffffff;
 }
 
 .logo-container {
-    position: relative; /* Zorgt ervoor dat ::after zich baseert op deze container */
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 1; /* Zorg ervoor dat de inhoud boven de achtergrond blijft */
-    padding: 10px 40px ; /* Optionele padding */
+    gap: 10px;
 }
 
-.logo-container::after {
-    content: "";
-    position: absolute;
-    top: -23px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #ffffff;
-    /* border: 1px solid var(--green-color); */
-    z-index: -1;
-    border-radius: 0 0 20px 20px;
-    padding-bottom: 70px;
-    box-shadow: 0px 0px 2px 1px #cccccc;
-    transition: padding 0.3s; /* Voeg een transitie toe voor achtergrondkleur en padding */
-
-}
+.logo-link { text-decoration: none; display: flex; align-items: center; }
 /* Logo stijl */
-.logo {
-    width: 60px; /* Kleinere logo wanneer gescrold */
-    transition: width 0.3s; /* Maak de logo-grootte ook flexibel */
-}
+.logo { width: 60px; height: auto; display: block; transition: transform 0.2s ease; }
+.logo-container:hover .logo { transform: scale(1.06); }
 
 /* Navigatie lijst */
 .nav-list {
     list-style: none;
-    margin: 10px 0 0;
+    margin: 6px 0 0;
     padding: 0;
     display: flex;
     justify-content: center;
@@ -87,7 +49,9 @@
     text-decoration: none;
     font-size: 17px;
     position: relative; /* Maak de link een relatief element voor het gebruik van ::after */
-
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     transition: color 0.2s, transform 0.2s;
 }
 
@@ -118,6 +82,112 @@
     align-items: center;
 }
 
+.header-actions { display: flex; align-items: center; gap: 14px; }
+.header-actions svg { width: 24px; height: 24px; }
+.header-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border: none; border-radius: 8px; color: #2c3e50; text-decoration: none; background: transparent; box-shadow: none; transition: color 0.2s; }
+.header-icon-btn:hover { color: var(--primary-color); }
+.dashboard-link { 
+  color: var(--black-color); 
+  text-decoration: none; 
+  font-size: 16px; 
+  position: relative;
+  transition: color 0.2s ease;
+}
+.dashboard-link:hover { 
+  color: var(--primary-color); 
+}
+.dashboard-link.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.dashboard-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+.rooms-link { 
+  color: var(--black-color); 
+  text-decoration: none; 
+  font-size: 16px; 
+  position: relative;
+  transition: color 0.2s ease;
+}
+.rooms-link:hover { 
+  color: var(--primary-color); 
+}
+.rooms-link.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+.rooms-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+}
+.header-separator { display: inline-block; width: 1px; height: 28px; background-color: #d6d6d6; margin: 0 8px; }
+.logout-icon-btn {
+    display: inline-flex; align-items: center; gap: 0;
+    background: transparent; border: none; color: #2c3e50;
+    padding: 6px; border-radius: 8px; cursor: pointer;
+    box-shadow: none;
+    transition: color 0.2s;
+}
+.logout-icon-btn:hover { color: var(--primary-color); }
+.logout-icon-btn:focus { outline: 3px solid #ffa500; outline-offset: 2px; }
+.logout-text { display: none; }
+
+
+.user-badge-link { text-decoration: none; position: relative; padding-bottom: 2px; }
+.user-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    min-width: 0;
+    background: transparent;
+    color: var(--black-color);
+    border: none;
+    cursor: pointer;
+    transition: color var(--transition-duration) var(--transition-ease), opacity var(--transition-duration) var(--transition-ease);
+}
+.user-badge__name {
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--black-color);
+}
+.user-badge__role {
+    font-size: 12px;
+    line-height: 1;
+    color: #98A2B3; /* lighter */
+    font-weight: var(--font-weight-normal); /* override anchor default */
+}
+.user-badge-link:hover .user-badge { transform: none; }
+.user-badge-link:hover .user-badge__name { color: var(--primary-color); }
+.user-badge-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    height: 2px;
+    width: 0;
+    background: var(--primary-color);
+    transition: width var(--transition-duration) var(--transition-ease);
+}
+.user-badge-link:hover::after { width: 100%; }
+.user-badge-link.active .user-badge__name { color: var(--primary-color); }
+.user-badge-link.active::after { width: 100%; }
 
 .icon-container {
     position: relative;

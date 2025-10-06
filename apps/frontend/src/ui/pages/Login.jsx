@@ -1,24 +1,24 @@
-import React from 'react';
+﻿import React from 'react';
 import LoginForm from '../components/forms/LoginForm';
 import '../styles/pages/Login.css'
-import { motion } from 'framer-motion'
 
 const Login = () => {
     return(
-                    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-    >
         <>
-        <div className='main-container'>
-        <img className="login-logo" src='logo.png' alt='UMC Utrecht logo'></img>
-        <h2 className='login-h2'>Inloggen</h2>
-        <LoginForm/>
-        </div>
+        <main className='login-page' role='main'>
+          <div className='login-layout'>
+            <section className='login-hero'>
+              <div className='login-hero-content'>
+                <img className="login-logo" src='logo.png' alt='UMC Utrecht logo' />
+                <h1 className='login-h2'>Welkom bij AR-Viewer</h1>
+              </div>
+            </section>
+            <section className='login-right'>
+              <LoginForm />
+            </section>
+          </div>
+        </main>
         </>
-        </motion.div>
     )
 }
 

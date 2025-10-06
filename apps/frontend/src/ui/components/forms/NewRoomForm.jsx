@@ -1,39 +1,34 @@
-import React, { useState } from "react"; // useEffect kan blijven, useState is nodig
+import React, { useState, useContext } from "react"; // useEffect kan blijven, useState is nodig
 import { handleCreateRoom } from "../../../business/controller/RoomController";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../../styles/components/forms/NewRoomForm.css";
-import uploadController from "../../../business/controller/ModelController";
+import FormWrapper from "./common/FormWrapper";
+import InputField from "./common/InputField";
+import PasswordField from "./common/PasswordField";
 import SurgeonSelect from "./newRooms/SurgeonSelect";
 import PatientSelect from "./newRooms/PatientSelect";
 import ModelUpload from "./newRooms/ModelUpload";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../context/NotificationContext";
+import { AuthContext } from "../../../context/AuthContext";
+import { getRedirectPathForRole } from "../../../constants/routes";
 const NewRoomForm = () => {
     const [roomName, setRoomName] = useState("");
     const [models, setModels] = useState([{ id: Date.now(), file: null }]);
-    const [uploadStatus, setUploadStatus] = useState(null);
     const [selectedSurgeons, setSelectedSurgeons] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState('');
     const [roomType, setRoomType] = useState("patient");
-    const [roomFormData, setRoomFormData] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);  // nieuw: popup zichtbaar
     const { showNotification } = useNotification();
+    const { currentUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    // Hier berekenen we formData, zodat we het kunnen gebruiken in confirm
-    const prepareFormData = () => {
-        const formData = new FormData();
-        formData.append("name", roomName);
-        formData.append("patient", selectedPatient || undefined);
-        selectedSurgeons.forEach((userId) => formData.append("users", userId));
-        formData.append("type", roomType);
-        models.forEach((model) => {
-            if (model.file) {
-                formData.append("files", model.file);
-            }
-        });
-        return formData;
+    // Get the appropriate redirect path based on user role
+    const getRedirectPath = () => {
+        return getRedirectPathForRole(currentUser?.role);
     };
+
+    // prepareFormData removed (unused)
 
     // Bij eerste submit: toon popup, stuur nog niet direct weg
     const handleSubmit = (event) => {
@@ -54,7 +49,7 @@ const NewRoomForm = () => {
             }
 
             showNotification(`Room: ${roomName} is aangemaakt`, "success");
-            navigate("/admin/rooms");
+            navigate(getRedirectPath());
         } catch (error) {
             showNotification("Er is iets misgegaan: " + error.message, "error");
         } finally {
@@ -71,48 +66,55 @@ const NewRoomForm = () => {
 
     return (
         <div className="new-room-container">
-            <form className="new-room-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Roomnaam</label>
-                    <input
-                        type="text"
-                        value={roomName}
-                        onChange={(e) => setRoomName(e.target.value)}
-                        required
-                    />
+            <FormWrapper onSubmit={handleSubmit}>
+              <InputField
+                label="Kamer naam"
+                name="roomName"
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                placeholder="Voer de kamernaam in"
+                required
+              />
+
+              <div className="uf-grid-2">
+                <div className="uf-field">
+                  <SurgeonSelect selectedSurgeon={selectedSurgeons} setSelectedSurgeon={setSelectedSurgeons} />
                 </div>
-
-                <SurgeonSelect selectedSurgeon={selectedSurgeons} setSelectedSurgeon={setSelectedSurgeons} />
-                <PatientSelect selectedPatient={selectedPatient} setSelectedPatient={setSelectedPatient} />
-
-                <div className="form-group">
-                    <label>Type</label>
-                    <select value={roomType} onChange={(e) => setRoomType(e.target.value)} required>
-                        <option value="patient">Patiënt</option>
-                        <option value="training">Chirurg</option>
-                        <option value="demo">Demo</option>
-                    </select>
+                <div className="uf-field">
+                  <PatientSelect selectedPatient={selectedPatient} setSelectedPatient={setSelectedPatient} />
                 </div>
+              </div>
 
-                <ModelUpload models={models} setModels={setModels} />
+              <div className="uf-grid-2">
+                <div className="uf-field">
+                  <label className="uf-label">Type</label>
+                  <select className="uf-input" value={roomType} onChange={(e) => setRoomType(e.target.value)} required>
+                    <option value="patient">Patiënt</option>
+                    <option value="surgeon">Chirurg</option>
+                    <option value="demo">Demo</option>
+                  </select>
+                </div>
+                <div className="uf-field">
+                  <ModelUpload models={models} setModels={setModels} />
+                </div>
+              </div>
 
-                {uploadStatus && (
-                    <div className={`upload-status ${uploadStatus.type}`}>
-                        {uploadStatus.message}
-                    </div>
-                )}
+              {/* upload status removed (unused) */}
 
-                <button type="submit" className="room-btn">Toevoegen</button>
-            </form>
+              <div className="uf-actions">
+                <button type="submit" className="uf-button uf-button-primary">Toevoegen</button>
+              </div>
+            </FormWrapper>
 
             {/* Popup toevoegen */}
             {showConfirm && (
-                <div className="modal-overlay">
+                <div className="modal-overlay" role="dialog" aria-modal="true">
                     <div className="modal-content">
-                        <h3>Weet je zeker dat je deze kamer wilt aanmaken?</h3>
-                        <div className="modal-actions">
-                            <button onClick={confirmSubmit} className="confirm-button">Bevestigen</button>
+                        <h3 className="modal-title">Weet je zeker dat je deze kamer wilt aanmaken?</h3>
+                        <p className="modal-sub">Je kunt dit later altijd weer aanpassen.</p>
+                        <div className="modal-actions modal-actions--right">
                             <button onClick={cancelSubmit} className="cancel-button">Annuleren</button>
+                            <button onClick={confirmSubmit} className="confirm-button">Bevestigen</button>
                         </div>
                     </div>
                 </div>

@@ -1,18 +1,7 @@
-.new-patient-container {
-    max-width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: var(--form-background);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
+.new-patient-container { max-width: 960px; margin: 0 auto; background: transparent; padding: 0; text-align: left; }
   
   /* Titel */
-  .new-patient-container h2 {
-    margin-bottom: 20px;
-    color: var(--black-color);
-  }
+.new-patient-container h2 { display: none; }
   
   /* Stijl voor de formuliervelden */
   .form-group {
@@ -38,22 +27,7 @@
   }
   
   /* Stijl voor de knop */
-  .new-patient-button {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--accent-color);
-    color: rgb(0, 0, 0);
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .new-patient-button:hover {
-    background-color: var(--btn-hover-color);
-
-  }
+.new-patient-button { display: none; }
 
   .modal-overlay {
   position: fixed;

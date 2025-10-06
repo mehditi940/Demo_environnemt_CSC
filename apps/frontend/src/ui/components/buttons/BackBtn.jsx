@@ -4,7 +4,7 @@ import "../../styles/components/buttons/BackBtn.css";
 
 const BackBtn = () => {
   return (
-    <button className="backBtn btn btn-primary" onClick={() => window.history.back()}>
+    <button className="backBtn btn" onClick={() => window.history.back()}>
       <i className="bi bi-arrow-left me-2"></i> Terug
     </button>
   );

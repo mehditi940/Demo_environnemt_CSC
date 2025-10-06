@@ -1,36 +1,50 @@
-import React, { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../../styles/components/forms/LoginForm.css';
-import { loginWithAdfs } from '../../../service/oidcClient';
-import { AuthContext } from '../../../context/AuthContext';
+﻿import React, { useContext, useEffect } from "react";
+import { AuthContext } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../constants/routes";
+import FormWrapper from "./common/FormWrapper";
+import { loginWithAdfs } from "../../../service/oidcClient";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    if (currentUser) {
-      const rolePaths = {
-        'super-admin': '/admin/dashboard',
-        'admin': '/chirurg/dashboard',
-        'default': '/chirurg/dashboard'
-      };
-      navigate(rolePaths[currentUser.role] || rolePaths.default);
+    if (!currentUser) {
+      return;
     }
+
+    const rolePaths = {
+      admin: ROUTES.ADMIN.DASHBOARD,
+      surgeon: ROUTES.SURGEON.DASHBOARD,
+      user: ROUTES.SURGEON.DASHBOARD,
+      default: ROUTES.ADMIN.DASHBOARD,
+    };
+
+    navigate(rolePaths[currentUser.role] || rolePaths.default);
   }, [currentUser, navigate]);
 
+  const handleAdfsLogin = (event) => {
+    event.preventDefault();
+    loginWithAdfs();
+  };
+
   return (
-    <div className="login-container">
-      <div className="login-form">
+    <FormWrapper
+      title="Inloggen"
+      description="Gebruik je AD FS-account om door te gaan."
+      onSubmit={handleAdfsLogin}
+    >
+      <div className="uf-actions">
         <button
           type="button"
-          className="login-button"
-          onClick={() => loginWithAdfs()}
+          className="uf-button uf-button-primary"
+          onClick={loginWithAdfs}
         >
           Inloggen met AD (ADFS)
         </button>
       </div>
-    </div>
+    </FormWrapper>
   );
 };
 

@@ -1,4 +1,4 @@
-import { UserManager, WebStorageStateStore, Log } from "oidc-client-ts";
+﻿import { UserManager, WebStorageStateStore, Log } from "oidc-client-ts";
 import { oidcConfig } from "./oidcConfig";
 
 // Optional logging for debugging OIDC flows

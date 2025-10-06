@@ -1,3 +1,6 @@
+// Central API base URL for the frontend
+export const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 /**
  * Debug logger for API requests
  * @param {String} method method of the request (get, post, put, delete)
@@ -12,7 +15,7 @@ const debugLogger = (method, endpoint, auth) => {
   ) {
     const date = new Date();
     console.log(
-      `[${date.toISOString()}](${method}) API Request to ${import.meta.env.VITE_API_URL + endpoint} with auth: ${auth}`
+      `[${date.toISOString()}](${method}) API Request to ${API_BASE_URL + endpoint} with auth: ${auth}`
     );
   }
 };
@@ -54,6 +57,16 @@ class APIHandler {
             }
           : {}
       );
+      
+      // Check if token is invalid/expired
+      if (response.status === 401) {
+        console.error("Token expired or invalid, redirecting to login");
+        localStorage.removeItem("authToken");
+        this.#token = null;
+        window.location.href = "/login";
+        return null;
+      }
+      
       return response.json();
     } catch (error) {
       console.error(error);
@@ -77,6 +90,16 @@ class APIHandler {
         },
         body: JSON.stringify(data),
       });
+      
+      // Check if token is invalid/expired
+      if (response.status === 401) {
+        console.error("Token expired or invalid, redirecting to login");
+        localStorage.removeItem("authToken");
+        this.#token = null;
+        window.location.href = "/login";
+        return null;
+      }
+      
       return response.json();
     } catch (error) {
       console.error(error);
@@ -189,16 +212,49 @@ class APIHandler {
    * @returns {APIHandler}
    */
   static getInstance() {
+    if (!APIHandler.instance) {
+      APIHandler.instance = new APIHandler(API_BASE_URL);
+    }
+    
     const apiInstance = APIHandler.instance;
     if (!apiInstance.#token) {
       const token = localStorage.getItem("authToken");
-      if (!token) {
-        console.error("No token found in localStorage, please login");
-      } else {
-        apiInstance.#setToken(token);
+      if (token) {
+        // Validate token before using it
+        const validToken = this.validateToken(token);
+        if (validToken) {
+          try {
+            apiInstance.#setToken(validToken);
+          } catch (error) {
+            console.error("Invalid token in localStorage:", error);
+            localStorage.removeItem("authToken");
+          }
+        }
       }
     }
     return apiInstance;
+  }
+
+  // Helper method to validate JWT token
+  static validateToken(token) {
+    if (!token) return null;
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      
+      // Check if token is expired
+      if (payload.exp && payload.exp < currentTime) {
+        localStorage.removeItem("authToken");
+        return null;
+      }
+      
+      return token;
+    } catch (error) {
+      console.error("Invalid token format:", error);
+      localStorage.removeItem("authToken");
+      return null;
+    }
   }
 
   /**
@@ -634,10 +690,5 @@ class APIHandler {
   }
 }
 
-const resolvedBaseUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
-if (!resolvedBaseUrl) {
-  // Defensive: should never hit due to default
-  throw new Error("VITE_API_URL is not configured and no default could be resolved");
-}
-const dummyAPI = new APIHandler(resolvedBaseUrl);
+const dummyAPI = new APIHandler(API_BASE_URL);
 export default dummyAPI;

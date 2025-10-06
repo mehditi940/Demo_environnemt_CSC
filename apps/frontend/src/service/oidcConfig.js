@@ -51,5 +51,3 @@ export const oidcConfig = {
   // Silent renew blijft mogelijk via authorize endpoint
   automaticSilentRenew: true,
 };
-
-

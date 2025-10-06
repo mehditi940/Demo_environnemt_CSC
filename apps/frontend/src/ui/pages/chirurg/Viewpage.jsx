@@ -1,16 +1,15 @@
-import React, { useRef, useState, Suspense, useEffect } from "react";
-import ControlsContainer from "../../components/model/ControlsContainer";
-import ModelViewer from "../../components/model/ModelFrame";
+import React, { useRef, useState, useEffect, Suspense } from "react";
 import Button from "../../components/Button";
-import FloatingMenu from "../../components/FloatingMenu";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import ToolMenu from "../../components/model/drawing/ToolMenu";
 import "../../styles/frame.css";
 import { useSocket } from "../../../service/socketHandler";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
-import dummyAPI from "../../../service/apiHandler";
+import dummyAPI, { API_BASE_URL } from "../../../service/apiHandler";
 import LiveStreamViewer from "../../components/view/LiveStreamViewer";
+import UnityContainer from "../../components/model_viewer/UnityContainer";
+import ModelViewer from "../../components/model_viewer/ModelFrame";
+
 
 async function downloadFileAsBlobURL(url, headers) {
   const response = await fetch(url, {
@@ -40,20 +39,81 @@ const ViewPage = () => {
   const socketHandler = useSocket(roomId, token);
 
   const [localUrl, setLocalUrl] = useState(null);
+  const [fileExtension, setFileExtension] = useState(null);
 
   useEffect(() => {
     const fetchAndCreateUrl = async () => {
-      const room = await dummyAPI.room.get_room(roomId);
-
-      const model = room.models[0];
-      if (!model) {
-        console.error("No model found in the room");
-        return;
-      }
-
-      const fileUrl = `${import.meta.env.VITE_API_URL}/static/${model.path}`;
-
       try {
+        const room = await dummyAPI.room.get_room(roomId);
+
+        const model = room.models[0];
+        if (!model) {
+          console.error("No model found in the room");
+          return;
+        }
+
+        const fileUrl = `${API_BASE_URL}/model/${model.id}`;
+        
+        // Extract file extension from the original model path
+        const fileExt = model.path.split('.').pop().toLowerCase();
+        console.log("Original model path:", model.path);
+        console.log("Detected file extension:", fileExt);
+        console.log("File URL:", fileUrl);
+        console.log("Model data:", model);
+        setFileExtension(fileExt);
+
+        // Check if model has content in database
+        if (!model.content) {
+          console.error("Model has no content in database:", model);
+          alert(`Dit 3D model is niet beschikbaar in de database.
+
+Dit kan gebeuren omdat:
+• Het model is geüpload voordat de database opslag werd geïmplementeerd
+• Het model moet opnieuw worden geüpload
+
+Oplossing: Upload het model opnieuw in de kamer.`);
+          return;
+        }
+
+        // Check file size before downloading
+        const headResponse = await fetch(fileUrl, {
+          method: 'HEAD',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        if (!headResponse.ok) {
+          if (headResponse.status === 404) {
+            alert(`3D model niet gevonden in database.
+
+Dit model moet opnieuw worden geüpload.
+Ga terug naar de kamer en upload het model opnieuw.`);
+            return;
+          }
+          throw new Error(`Failed to check file: ${headResponse.status}`);
+        }
+
+        const contentLength = headResponse.headers.get('content-length');
+        const fileSizeInMB = contentLength ? parseInt(contentLength) / (1024 * 1024) : 0;
+        
+        console.log("File size:", fileSizeInMB.toFixed(2), "MB");
+
+        // Check if file is too large (limit to 50MB for web loading)
+        if (fileSizeInMB > 50) {
+          console.error("File too large for web loading:", fileSizeInMB.toFixed(2), "MB");
+          alert(`Bestand is te groot (${fileSizeInMB.toFixed(2)} MB). 
+
+Dit model is waarschijnlijk bedoeld voor 3D printing, niet voor web weergave.
+
+Oplossingen:
+• Zoek een "low-poly" of "web-ready" versie
+• Gebruik Blender om het model te optimaliseren
+• Probeer OBJ formaat (beter gecomprimeerd)
+• Maximum grootte is 50 MB voor web weergave`);
+          return;
+        }
+
         const url = await downloadFileAsBlobURL(fileUrl, {
           Authorization: `Bearer ${token}`,
         });
@@ -62,12 +122,13 @@ const ViewPage = () => {
         // Optional: cleanup after unmount
         return () => URL.revokeObjectURL(url);
       } catch (err) {
-        console.error(err);
+        console.error("Error loading model:", err);
+        alert("Fout bij het laden van het 3D model. Controleer of het bestand geldig is en niet te groot.");
       }
     };
 
     fetchAndCreateUrl();
-  }, [roomId]);
+  }, [roomId, token]);
 
   const onPartsLoaded = (newParts) => {
     if (hasLoadedParts.current) return;
@@ -81,39 +142,9 @@ const ViewPage = () => {
     setPartSettings(settingsMap);
   };
 
-  const handlePencil = () => {
-    setDrawMode("pencil");
-    setIsLocked(true);
-    socketHandler.send.lockModel(true);
-  };
+  // Removed unused handlers (pencil/mouse/lock) to satisfy linter
 
-  const handleMouse = () => {
-    setDrawMode("mouse");
-    setIsLocked(false);
-    socketHandler.send.lockModel(false);
-  };
-
-  const handleLock = () => {
-    setIsLocked((prev) => !prev);
-    socketHandler.send.lockModel(!isLocked);
-  };
-
-  const handleReset = () => {
-    setDrawMode("mouse");
-
-    const resetSettings = {};
-    parts.forEach((part) => {
-      resetSettings[part.name] = { visible: true, opacity: 1.0 };
-    });
-    socketHandler.send.reset();
-    setPartSettings(resetSettings);
-
-    if (modelRef.current) {
-      modelRef.current.clearDrawing();
-      modelRef.current.resetRotation();
-      modelRef.current.resetCamera();
-    }
-  };
+  // Removed unused handleReset to satisfy linter
 
   useEffect(() => {
     socketHandler.start();
@@ -125,40 +156,16 @@ const ViewPage = () => {
 
   return (
     <div className="page-container">
-      <ToolMenu
-        onMouse={handleMouse}
-        onPencil={handlePencil}
-        onReset={handleReset}
-        onLock={handleLock}
-        isLocked={isLocked}
-      />
-
       <LiveStreamViewer roomId={roomId} token={token} />
 
-      <ControlsContainer
-        parts={parts}
-        partSettings={partSettings}
-        onTogglePart={(partName, isVisible) => {
-          socketHandler.send.layerToggle(partName, isVisible);
-          setPartSettings((prev) => ({
-            ...prev,
-            [partName]: { ...prev[partName], visible: isVisible },
-          }));
-        }}
-        onOpacityChange={(partName, opacityValue) => {
-          socketHandler.send.layerTransparency(partName, opacityValue);
-          setPartSettings((prev) => ({
-            ...prev,
-            [partName]: { ...prev[partName], opacity: opacityValue },
-          }));
-        }}
-      />
+      {/* ControlsContainer removed: component not present; can re-add when available */}
 
       <div className="large-model-container">
         {localUrl ? (
           <Suspense fallback={<LoadingSpinner />}>
             <ModelViewer
               modelPath={localUrl}
+              fileExtension={fileExtension}
               partSettings={partSettings}
               onPartsLoaded={onPartsLoaded}
               drawMode={drawMode}
@@ -178,10 +185,6 @@ const ViewPage = () => {
         />
         <Button text="Next" onClick={() => console.log("Next clicked")} />
       </div>
-
-      <FloatingMenu
-        items={["Menu item 1", "Menu item 2", "Menu item 3", "Menu item 4"]}
-      />
     </div>
   );
 };

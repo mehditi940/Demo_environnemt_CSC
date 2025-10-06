@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { API_BASE_URL } from "./apiHandler";
 
 export class SocketHandler {
   #roomID = null;
@@ -29,7 +30,7 @@ export class SocketHandler {
 
   start() {
     // Connect to the socket.io server with authentication
-    this.#socket = io(import.meta.env.VITE_API_URL, {
+    this.#socket = io(API_BASE_URL, {
       extraHeaders: {
         authorization: `bearer ${this.#userToken}`,
       },

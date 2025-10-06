@@ -1,5 +1,5 @@
-// AuthContext.js
-import React, { createContext, useEffect, useState } from "react";
+﻿// AuthContext.js
+import React, { createContext, useCallback, useEffect, useState } from "react";
 import { getUser, logoutUser } from "../business/authManager";
 
 export const AuthContext = createContext();
@@ -7,20 +7,24 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
-  // AD-only: login gaat via OIDC redirect knop, hier geen lokale login meer
+  const refreshUser = useCallback(async () => {
+    try {
+      const result = await getUser();
+      if (result.success) {
+        setCurrentUser(result.data);
+        return result.data;
+      }
+      setCurrentUser(null);
+    } catch (error) {
+      console.error("Error checking user session:", error);
+      setCurrentUser(null);
+    }
+    return null;
+  }, []);
 
   useEffect(() => {
-    const checkUserSession = async () => {
- 
-        const result = await getUser();
-        if (result.success) {
-          setCurrentUser(result.data);
-        }
-    };
-    checkUserSession();
-  }, []);
-  
-  
+    refreshUser();
+  }, [refreshUser]);
 
   const logout = () => {
     logoutUser();
@@ -28,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, logout }}>
+    <AuthContext.Provider value={{ currentUser, refreshUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

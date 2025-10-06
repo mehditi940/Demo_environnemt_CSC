@@ -1,19 +1,7 @@
-.new-account-container {
-  max-width: 450px;
-  margin: 60px auto;
-  padding: 30px;
-  background-color: var(--form-background);
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-  text-align: center;
-}
+.new-account-container { max-width: 1100px; margin: 0 auto; padding: 0; background: transparent; }
+.register-layout { display: grid; grid-template-columns: 1fr; gap: 0; }
 
-.new-account-container h2 {
-  margin-bottom: 24px;
-  color: var(--black-color);
-  font-size: 26px;
-  font-weight: 700;
-}
+.new-account-container h2 { display:none; }
 
 .form-group {
   margin-bottom: 20px;

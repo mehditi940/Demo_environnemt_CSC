@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
   BrowserRouter as Router,
@@ -18,13 +18,17 @@ import NewPatient from "./ui/pages/admin/NewPatient";
 import NewAccount from "./ui/pages/admin/NewAccount";
 import NewPassword from "./ui/pages/admin/NewPassword";
 import ChirurgDashboard from "./ui/pages/chirurg/Dashboard";
+import ChirurgRooms from "./ui/pages/chirurg/Rooms";
 import ProtectedRoute from "./ui/components/auth/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
-import { AnimatePresence } from "framer-motion";
 import Patients from "./ui/pages/admin/Patients";
 import Users from "./ui/pages/admin/Users";
+import NotFound from "./ui/pages/NotFound";
+import Profile from "./ui/pages/admin/Profile";
 import AuthCallback from "./ui/pages/AuthCallback";
+import { ROUTES } from "./constants/routes";
+
 function App() {
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
@@ -42,67 +46,152 @@ function App() {
     };
   }, []);
 
-  const isView = location.pathname === "/chirurg/dashboard";
-  const isChirurgDashboard = location.pathname === "/chirurg/view";
-  const isLogin = location.pathname === "/login";
-  const headerShouldShow = !isView && !isChirurgDashboard && !isLogin;
+  const hideHeaderPaths = useMemo(
+    () => new Set([ROUTES.LOGIN, ROUTES.AUTH.CALLBACK]),
+    []
+  );
+
+  const isKnownPath =
+    location.pathname === ROUTES.HOME ||
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/chirurg") ||
+    location.pathname === ROUTES.PROFILE ||
+    hideHeaderPaths.has(location.pathname);
+
+  const headerShouldShow = isKnownPath && !hideHeaderPaths.has(location.pathname);
+
   return (
-    <>
+    <div>
       {headerShouldShow && (isMobile ? <BurgerMenu /> : <DesktopHeader />)}
 
       <Routes>
-        <Route path="/" element={<Homepage />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/auth/callback" element={<AuthCallback />}></Route>
+        <Route path={ROUTES.HOME} element={<Homepage />} />
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.AUTH.CALLBACK} element={<AuthCallback />} />
         <Route
           path="/chirurg/view/:roomId"
           element={
             <ProtectedRoute
               element={<ViewPage />}
-              allowedRoles={["admin", "super-admin"]}
+              allowedRoles={["admin", "surgeon"]}
             />
           }
-        ></Route>
+        />
         <Route
-          path="/admin/dashboard"
+          path={ROUTES.PROFILE}
+          element={
+            <ProtectedRoute
+              element={<Profile />}
+              allowedRoles={["admin", "surgeon", "user"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN.DASHBOARD}
           element={
             <ProtectedRoute
               element={<Dashboard />}
-              allowedRoles={["admin", "super-admin"]}
+              allowedRoles={["admin"]}
             />
           }
-        ></Route>
-        <Route path="/admin/rooms" element={<Rooms />}></Route>
-        <Route path="/admin/rooms/nieuw-room" element={<NewRoom />}></Route>
+        />
         <Route
-          path="/admin/patients/nieuw-patient"
-          element={<NewPatient />}
-        ></Route>
-        <Route path="/admin/patients" element={<Patients />}></Route>
-        <Route path="/admin/users" element={<Users />}></Route>
-
+          path={ROUTES.ADMIN.ROOMS}
+          element={
+            <ProtectedRoute
+              element={<Rooms />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
         <Route
-          path="/admin/users/nieuw-account"
-          element={<NewAccount />}
-        ></Route>
-        <Route path="/admin/nieuw-wachtwoord" element={<NewPassword />}></Route>
+          path={ROUTES.ADMIN.NEW_ROOM}
+          element={
+            <ProtectedRoute
+              element={<NewRoom />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN.NEW_PATIENT}
+          element={
+            <ProtectedRoute
+              element={<NewPatient />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN.PATIENTS}
+          element={
+            <ProtectedRoute
+              element={<Patients />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN.USERS}
+          element={
+            <ProtectedRoute
+              element={<Users />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN.NEW_USER}
+          element={
+            <ProtectedRoute
+              element={<NewAccount />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN.NEW_PASSWORD}
+          element={
+            <ProtectedRoute
+              element={<NewPassword />}
+              allowedRoles={["admin"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.SURGEON.DASHBOARD}
+          element={
+            <ProtectedRoute
+              element={<ChirurgDashboard />}
+              allowedRoles={["admin", "surgeon"]}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.SURGEON.ROOMS}
+          element={
+            <ProtectedRoute
+              element={<ChirurgRooms />}
+              allowedRoles={["admin", "surgeon"]}
+            />
+          }
+        />
 
-        <Route path="/chirurg/dashboard" element={<ChirurgDashboard />}></Route>
+        {/* 404 Not Found - This should be the last route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </div>
   );
 }
 
 const AppWithRouter = () => (
-  <AnimatePresence mode="wait">
-    <AuthProvider>
-      <NotificationProvider>
-        <Router>
-          <App />
-        </Router>
-      </NotificationProvider>
-    </AuthProvider>
-  </AnimatePresence>
+  <AuthProvider>
+    <NotificationProvider>
+      <Router>
+        <App />
+      </Router>
+    </NotificationProvider>
+  </AuthProvider>
 );
 
 export default AppWithRouter;

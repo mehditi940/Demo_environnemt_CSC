@@ -1,4 +1,5 @@
 import dummyAPI from "../service/apiHandler";
+import { handleGetUsers } from "./controller/userController";
 
 // Login gebruiker
 export async function handleLogin(email, password) {
@@ -36,8 +37,6 @@ export async function getUser() {
       throw new Error("Ophalen gebruiker mislukt");
     }
 
-;
-
     return { success: true, data: response };
   } catch (error) {
     return { success: false, message: error.message };
@@ -48,6 +47,69 @@ export async function getUser() {
 export function logoutUser() {
   localStorage.removeItem("authToken");
   window.location.href = "/login";
+}
+
+// Check if user is authenticated with a valid token
+export function isAuthenticated() {
+  const token = localStorage.getItem("authToken");
+  
+  if (!token) {
+    return false;
+  }
+
+  try {
+    // Decode the JWT token to check if it's expired
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    
+    // Check if token is expired
+    if (payload.exp && payload.exp < currentTime) {
+      // Token is expired, remove it
+      localStorage.removeItem("authToken");
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    // Invalid token format, remove it
+    console.error("Invalid token format:", error);
+    localStorage.removeItem("authToken");
+    return false;
+  }
+}
+
+// Get stored token
+export function getStoredToken() {
+  return localStorage.getItem("authToken");
+}
+
+// Validate and clean up token if needed
+export function validateAndCleanToken() {
+  const token = localStorage.getItem("authToken");
+  
+  if (!token) {
+    return null;
+  }
+
+  try {
+    // Decode the JWT token to check if it's expired
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    
+    // Check if token is expired
+    if (payload.exp && payload.exp < currentTime) {
+      // Token is expired, remove it
+      localStorage.removeItem("authToken");
+      return null;
+    }
+    
+    return token;
+  } catch (error) {
+    // Invalid token format, remove it
+    console.error("Invalid token format:", error);
+    localStorage.removeItem("authToken");
+    return null;
+  }
 }
 
 // Registreer een nieuwe gebruiker
@@ -88,23 +150,8 @@ export async function handleUserRegistration(formValues) {
 // Haal alle gebruikers op
 export async function getAllUsers() {
   try {
-    const response = await dummyAPI.auth.get_users();
-
-   if (!response.ok) {
-      throw new Error("Ophalen gebruiker mislukt");
-    }
-
-    const responseData = await response.json();
-      console.log(responseData)
-
-    // Filter super-admin en verwijderde gebruikers eruit
-    const filteredUsers = responseData.filter((user) => 
-      user.role !== "super-admin" && user.deleted === "false"
-    );
-
-    console.log(filteredUsers);
-
-    return { success: true, data: filteredUsers };
+    const response = await handleGetUsers();
+    return response;
   } catch (error) {
     return { success: false, message: error.message };
   }
@@ -128,7 +175,7 @@ export async function getAllPatients() {
 // Haal gebruiker op via ID
 export async function getUserById(id) {
   try {
-    const response = await getAllUsers();
+    const response = await handleGetUsers();
 
     if (response.success) {
       const user = response.data.find(u => u.id === id);

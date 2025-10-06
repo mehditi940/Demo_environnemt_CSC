@@ -17,24 +17,35 @@ const ModelUpload = ({ models, setModels }) => {
 
     return (
         <div className="model-upload-group">
-            <label>Modelbestanden</label>
+            <label className="uf-label">Modelbestanden</label>
             {models.map((model, index) => (
-                <div key={model.id} className="file-item">
+                <div key={model.id} className="uf-file-row">
                     <input
+                        id={`model-file-${model.id}`}
                         type="file"
                         onChange={(e) => handleModelFileChange(index, e)}
-                        accept=".stl,.obj,.zip, .png, .jpeg, .3mf"
+                        accept=".stl,.obj,.zip,.png,.jpeg,.3mf"
+                        style={{ display: "none" }}
                         // required={index === 0}
                     />
-                    {model.file && <span>{model.file.name}</span>}
+                    <label htmlFor={`model-file-${model.id}`} className="uf-button" style={{display:'inline-flex',alignItems:'center',justifyContent:'center',height:'40px',padding:'0 14px'}}>
+                        Kies bestand
+                    </label>
+                    <span className="uf-file-name">{model.file ? model.file.name : "Geen bestand gekozen"}</span>
                     {models.length > 1 && (
-                        <i onClick={() => handleRemoveModel(model.id)} className="bi bi-x-circle-fill"></i>
+                        <button type="button" onClick={() => handleRemoveModel(model.id)} className="uf-button" style={{marginLeft: 'auto',height:'40px',padding:'0 12px'}}>
+                            Verwijder
+                        </button>
                     )}
                 </div>
             ))}
-            <button type="button" className="add-btn" onClick={handleAddModel} style={{ margin: "10px" }}>
+            <span
+                className="uf-text-link"
+                onClick={handleAddModel}
+                style={{ margin: "10px 0 0 0", alignSelf: 'flex-start' }}
+            >
                 + Voeg extra model toe
-            </button>
+            </span>
         </div>
     );
 };

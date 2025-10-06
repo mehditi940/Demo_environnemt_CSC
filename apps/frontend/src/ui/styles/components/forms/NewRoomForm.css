@@ -1,21 +1,11 @@
 .new-room-container {
-    max-width: 420px;
-    margin: 50px auto;
-    padding: 25px 30px;
-    background-color: var(--form-background);
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-    text-align: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 960px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 /* Titel */
-.new-room-container h2 {
-    margin-bottom: 25px;
-    color: var(--black-color);
-    font-weight: 700;
-    font-size: 1.6rem;
-}
+.new-room-container h2 { display: none; }
 
 /* Formuliervelden */
 .form-group {
@@ -48,6 +38,18 @@
     border-color: var(--accent-color);
     box-shadow: 0 0 8px rgba(0, 168, 107, 0.3);
     outline: none;
+}
+
+/* Select dropdown styling */
+.form-group select {
+    color: var(--black-color);
+    background-color: var(--white-color);
+}
+
+.form-group select option {
+    color: var(--black-color);
+    background-color: var(--white-color);
+    padding: 8px 12px;
 }
 
 /* Buttons */

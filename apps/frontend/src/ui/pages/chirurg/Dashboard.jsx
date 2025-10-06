@@ -1,95 +1,127 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/pages/chirurg/Dashboard.css";
 import { useNavigate } from "react-router-dom";
-import QrCode from "../../components/QrCode";
-import QRCode from "qrcode";
-import LogoutBtn from "../../components/buttons/LogoutBtn";
+import UniversalTable from "../../components/table/UniversalTable";
+import Button from "../../components/Button";
 import { handleGetRooms } from "../../../business/controller/RoomController";
-import Select from "react-select";
-import { motion } from "framer-motion";
-import SelectedRoom from "../../components/rooms/admin/SelectedRoom";
-import SelectedRoomChirurg from "../../components/rooms/chirurg/SelectedRoomChirurg";
-import dummyAPI from "../../../service/apiHandler";
+import "../../styles/pages/chirurg/Dashboard.css";
 
 const ChirurgDashboard = () => {
-  const [qr, setQr] = useState(false);
-  const [src, setSrc] = useState("/logo.png");
   const [rooms, setRooms] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAllRooms = async () => {
-      const results = await handleGetRooms();
-      setRooms(results.data);
+      try {
+        setLoading(true);
+        const results = await handleGetRooms();
+        setRooms(results.data || []);
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     getAllRooms();
   }, []);
 
-  const generateQrCode = async () => {
-    const data = await dummyAPI.connection.create_connection(selectedRoom.id);
-
-    QRCode.toDataURL(data.qrCodeString).then(setSrc);
-    setQr(true);
+  const handleRoomClick = (roomId) => {
+    navigate(`/chirurg/view/${roomId}`);
   };
 
-  const roomOptions = rooms.map((room) => ({
-    value: room.id,
-    label: room.name,
-    data: room,
-  }));
+  const columns = [
+    {
+      key: 'name',
+      header: 'Kamer naam',
+      sortable: true,
+      render: (row) => (
+        <button type='button' className='ut-cell-link' onClick={(e)=>{ e.preventDefault(); handleRoomClick(row.id); }}>
+          {row.name}
+        </button>
+      )
+    },
+    {
+      key: 'createdAt',
+      header: 'Aangemaakt',
+      sortable: true,
+      align: 'left',
+      compact: true,
+      render: (row) => row.createdAt ? new Date(row.createdAt).toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Onbekend'
+    },
+    {
+      key: 'modelsCount',
+      header: 'Modellen',
+      sortable: true,
+      align: 'center',
+      compact: true,
+      render: (row) => (row?.models?.length || 0)
+    },
+    {
+      key: 'updatedAt',
+      header: 'Laatst bijgewerkt',
+      sortable: true,
+      align: 'left',
+      compact: true,
+      render: (row) => row.updatedAt ? new Date(row.updatedAt).toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Onbekend'
+    }
+  ];
+
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <div className="loading-spinner">Laden...</div>
+      </div>
+    );
+  }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
-    >
-      <>
-        <div className={`main-container ${src ? "qr-active" : ""}`}>
-          <h1>Rooms</h1>
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Kamers</h1>
+        
+        
+      </div>
 
-          <div className="optionsContainer">
-            {/* Geen rooms melding */}
-            {rooms.length === 0 ? (
-              <p style={{ color: "red" }}>Geen rooms beschikbaar.</p>
-            ) : (
-              <>
-                <Select
-                  options={roomOptions}
-                  value={
-                    selectedRoom
-                      ? roomOptions.find((opt) => opt.value === selectedRoom.id)
-                      : null
-                  }
-                  onChange={(selectedOption) =>
-                    setSelectedRoom(selectedOption.data)
-                  }
-                  placeholder="Zoek een room..."
-                  isSearchable
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                />
-
-                <button className="accentBtn" disabled={!selectedRoom}>
-                  Bevestigen
-                </button>
-              </>
-            )}
-          </div>
-
-          <button className="primaryBtnChirurg" onClick={generateQrCode}>
-            QR code genereren
-          </button>
-
-          {qr && <QrCode src={src} roomId={selectedRoom.id} />}
-
-          {/* Room details */}
-          <SelectedRoomChirurg room={selectedRoom} />
+      <div className='room-table-card'>
+        <div className='rooms-sidebar'>
+        <div className='rooms-top-actions'>
+          <span
+            className='ut-text-link ut-text-link--lg'
+            role='button'
+            tabIndex={0}
+            onClick={() => navigate('/chirurg/rooms')}
+            onKeyDown={(e)=>{ if(e.key==='Enter'||e.key===' ') navigate('/chirurg/rooms'); }}
+          >
+            <svg
+              className='ut-icon ut-icon--left'
+              xmlns='http://www.w3.org/2000/svg'
+              width='18'
+              height='18'
+              viewBox='0 0 24 24'
+              fill='none'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              aria-hidden='true'
+              focusable='false'
+            >
+              <circle cx='12' cy='12' r='10'></circle>
+              <polyline points='12 6 12 12 16 14'></polyline>
+            </svg>
+            Kamer Geschiedenis
+          </span>
         </div>
-        <LogoutBtn />
-      </>
-    </motion.div>
+          <UniversalTable
+            columns={columns}
+            data={rooms}
+            emptyMessage="Geen rooms beschikbaar"
+            initialSort={{ key: 'updatedAt', direction: 'desc' }}
+            defaultPageSize={10}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

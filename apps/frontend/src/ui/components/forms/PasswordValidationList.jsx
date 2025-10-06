@@ -25,15 +25,20 @@ const PasswordValidationList = ({ password }) => {
     }
   ]
 
+  const remaining = rules.filter(r => !r.test(password))
+
+  if (remaining.length === 0) {
+    return null
+  }
+
   return (
     <ul className="password-validation-list">
-    {rules.map((rule, index) => (
-        <li key={index}
-        className={rule.test(password) ? 'valid' : 'invalid'}
-        >
-            {rule.label}
-            </li>
-    ))}
+      {remaining.map((rule, index) => (
+        <li key={index} className={'invalid'}>
+          <span className="rule-icon">•</span>
+          <span>{rule.label}</span>
+        </li>
+      ))}
     </ul>
   )
 }

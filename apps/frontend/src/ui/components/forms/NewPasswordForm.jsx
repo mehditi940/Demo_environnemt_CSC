@@ -1,5 +1,7 @@
 import React, {useState } from 'react'
 import '../../styles/components/forms/NewPasswordForm.css'
+import FormWrapper from './common/FormWrapper'
+import InputField from './common/InputField'
 
 import { useNavigate } from 'react-router-dom';
 import { handleNewPassword } from '../../../business/controller/userController';
@@ -64,34 +66,18 @@ const NewPasswordForm = () => {
 
 
     return(
-<>
-<div className="new-password-container">
-        <form  className="new-account-form">
-
-
-          <div className="form-group">
-            <label>Email</label>
-            <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Voer de patientnaam" />
-          </div>
-
-   
-          <div className="form-group">
-            <label>Wachtwoord</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Voer je wachtwoord in" />
-          </div>
+      <div className="new-password-container">
+        <FormWrapper onSubmit={handleSubmit}>
+          <InputField label="Email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Voer je emailadres in" required />
+          <InputField label="Nieuw wachtwoord" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Voer je wachtwoord in" required />
           <PasswordValidationList password={password} />
-          <div className="form-group">
-            <label>Wachtwoord</label>
-
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder="Herhaal het wachtwoord" />
+          <InputField label="Herhaal wachtwoord" type="password" value={confirmPassword || ''} onChange={(e)=>setConfirmPassword(e.target.value)} placeholder="Herhaal het wachtwoord" required />
+          {error && <p className="form-error">{error}</p>}
+          <div className="uf-actions">
+            <button type="submit" className="uf-button uf-button-primary">Wachtwoord veranderen</button>
           </div>
-                  {error && <p className="form-error">{error}</p>}
-
-          <button type="submit" onClick={handleSubmit} className="new-password-button">Wachtwoord veranderen</button>
-
-        </form>
+        </FormWrapper>
       </div>
-      </>
     )
 }
 

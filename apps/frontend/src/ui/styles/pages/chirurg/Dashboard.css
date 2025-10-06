@@ -1,6 +1,142 @@
-.qr-active{
-    overflow: hidden;
-    padding: 0;
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 70px);
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Align table card with admin styles */
+.room-table-card { background: #fff; border-radius: 16px; box-shadow: 0 8px 24px rgba(17,145,250,0.08); border: 1px solid #e7eefb; overflow: hidden; }
+.rooms-sidebar { padding: 16px; }
+.ut-icon { margin-right: 6px; vertical-align: -2px; }
+.ut-cell-link { color: var(--primary-color); font-weight: 600; background: none; border: none; cursor: pointer; text-decoration: underline; }
+.ut-cell-link:hover { color: #0d6efd; text-decoration: none; }
+
+.dashboard-subtitle {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin: 0 0 1rem 0;
+}
+
+.history-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.history-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.dashboard-table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(17, 145, 250, 0.08);
+  overflow: hidden;
+  border: 1px solid #e7eefb;
+}
+
+.room-name-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: inherit;
+  transition: color 0.2s ease;
+}
+
+.room-name-link:hover { color: #0d6efd; text-decoration: none; }
+
+.patient-name {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.update-date {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.models-count {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-occupied {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-maintenance {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #7f8c8d;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0.5rem;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+  }
 }
 
 .optionsContainer {
