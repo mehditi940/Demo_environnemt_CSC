@@ -143,7 +143,7 @@ export const AdfsJwtStrategy = hasAdfsEnv
       },
       async (payload: any, cb) => {
         try {
-          // Map common ADFS/AAD claim shapes to our UserInfo
+          // Extract common identity fields from token
           const email =
             payload?.email ||
             payload?.upn ||
@@ -153,11 +153,69 @@ export const AdfsJwtStrategy = hasAdfsEnv
           const firstName = payload?.given_name || payload?.name || email || "User";
           const id = (payload?.sub || payload?.oid || payload?.sid || email || "").toString();
 
-          // Default role for ADFS users; override with ADFS_DEFAULT_ROLE env if desired
+          // Helper: collect potential group/role claims into a flat list of strings
+          const extractStrings = (val: any): string[] => {
+            if (!val) return [];
+            if (Array.isArray(val)) return val.map((v) => String(v));
+            if (typeof val === "string") {
+              // split on common separators if multiple values
+              return String(val)
+                .split(/[;,]/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+            }
+            return [];
+          };
+
+          const candidateKeys = [
+            "groups",
+            "group",
+            "roles",
+            "role",
+            // Common ADFS/AAD claim URIs that might be flattened by libraries
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+            "http://schemas.xmlsoap.org/claims/Group",
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/groups",
+          ];
+
+          let groups: string[] = [];
+          for (const key of candidateKeys) {
+            groups = groups.concat(extractStrings(payload?.[key]));
+          }
+
+          // Normalize values for comparison
+          const norm = (s: string) => s.toLowerCase();
+          const groupSet = new Set(groups.map(norm));
+
+          // Configurable group-to-role mapping via env vars (comma-separated lists)
+          const envToList = (name: string, def?: string[]): string[] => {
+            const raw = process.env[name];
+            if (!raw || raw.trim() === "") return def || [];
+            return raw
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+          };
+
+          const adminGroups = envToList("ADFS_GROUP_ADMIN", ["Domain Admins"]).map(norm);
+          const surgeonGroups = envToList("ADFS_GROUP_SURGEON", ["umc-chirugen"]).map(norm);
+
+          const isInAny = (set: Set<string>, list: string[]) => list.some((g) => set.has(g));
+
+          // Determine role by membership; admin takes precedence over surgeon
+          let resolvedRole: "super-admin" | "admin" | "user" | "system" | "surgeon" =
+            (process.env.ADFS_DEFAULT_ROLE as any) || "admin";
+
+          if (isInAny(groupSet, adminGroups)) {
+            resolvedRole = "admin";
+          } else if (isInAny(groupSet, surgeonGroups)) {
+            resolvedRole = "surgeon" as any; // accepted by frontend routing
+          }
+
           const user = {
             id,
             firstName,
-            role: process.env.ADFS_DEFAULT_ROLE || "admin",
+            role: resolvedRole,
             email,
           };
           return cb(null, user);
