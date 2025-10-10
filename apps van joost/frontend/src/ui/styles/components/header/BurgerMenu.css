@@ -1,0 +1,160 @@
+.burger-menu-header {
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    background-color: var(--white-color);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s, box-shadow 0.3s, padding 0.3s;
+}
+
+.burger-menu-header.scrolled{
+    padding: 5px 20px;
+    background-color: #000000c9;
+    .burger-line{
+        background-color: #ffffff;
+    }
+} 
+
+.burger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    cursor: pointer;
+    z-index: 10000;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    color: var(--black-color);
+}
+
+.burger-icon:focus { outline: none; }
+.burger-icon:focus-visible { box-shadow: 0 0 0 3px rgba(0,0,0,0.12); border-radius: 8px; }
+
+/* Remove old line-based icon styles; using SVG now */
+
+.burger-line.open:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+    background-color: var(--white-color);
+
+}
+
+.burger-line.open:nth-child(2) {
+    opacity: 0;
+}
+
+.burger-line.open:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+    background-color: var(--white-color);
+
+}
+
+/* Ensure lines are visible on scrolled dark header */
+.burger-menu-header.scrolled .burger-icon { color: #fff; }
+
+.burger-nav {
+    position: fixed; /* Maak het vast aan het scherm */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--primary-color); /* Achtergrondkleur van de container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Centreer inhoud verticaal */
+    align-items: center; /* Centreer inhoud horizontaal */
+    overflow: hidden; /* Verwijder scroll binnen het menu */
+    transform: translateY(-100%); /* Startpositie buiten het scherm */
+    opacity: 0; /* Start onzichtbaar */
+    transition: transform 0.5s ease, opacity 0.5s ease; /* Animatie toevoegen */
+}
+
+.burger-nav.open {
+    transform: translateY(0); /* Breng het menu in beeld */
+    opacity: 1; /* Maak het menu zichtbaar */
+  
+}
+
+.burger-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Extra ruimte tussen items */
+    text-align: center; /* Zorg dat de tekst gecentreerd blijft */
+    width: 100%; /* Zorg dat items de breedte vullen */
+}
+
+.burger-nav-list li {
+    width: 70%;
+    margin: 0 auto;
+    padding-bottom: 8px; /* Ruimte onder de tekst */
+    position: relative; /* Voor plaatsing van de lijn */
+    a i{
+        font-size: 40px;
+        color: var(--white-color);
+    }
+}
+
+/* Voeg de lijn tussen items toe */
+.burger-nav-list li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    bottom: -12px; /* Plaats de lijn onder het item */
+    left: 50%; /* Centreer de lijn */
+    transform: translateX(-50%); /* Fixeer de lijn in het midden */
+    width: 60%; /* Lengte van de lijn */
+    height: 1px; /* Dikte van de lijn */
+    background-color: rgba(255, 255, 255, 0.3); /* Kleur van de lijn */
+}
+
+.burger-nav-list a {
+    text-decoration: none;
+    color: var(--white-color); /* Kleur van de tekst */
+    font-size: 18px;
+    padding: 15px 0; /* Ruimte rondom elk item */
+    transition: color 0.3s ease, transform 0.3s ease; /* Animatie voor hover */
+}
+
+.burger-nav-list a:hover {
+    color: rgba(255, 255, 255, 0.8); /* Lichtere kleur bij hover */
+    transform: scale(1.1); /* Vergroot licht bij hover */
+}
+
+/* Disable scroll when menu is open */
+body.no-scroll {
+    overflow: hidden;
+}
+
+
+.settingsLogoutBtnBurg{
+    position: absolute;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.logout-btn-mobile{
+    background: #fff;
+    color: #111;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.profilePicContainer img{
+    width: 90px;
+    border-radius: 50%;
+}

@@ -1,0 +1,174 @@
+:root {
+  /* Map to existing site/UMC tokens */
+  --uf-bg: var(--background-main);
+  --uf-panel: var(--white-color);
+  --uf-border: var(--border-color);
+  --uf-border-focus: var(--primary-color);
+  --uf-text: var(--black-color);
+  --uf-text-dim: #667085;
+  --uf-danger: var(--red-color);
+  --uf-success: var(--green-color);
+  --uf-radius: var(--border-radius);
+  --uf-spacing: var(--spacing-medium);
+  --uf-input-height: 48px;
+  --uf-shadow: var(--box-shadow);
+}
+
+.uf-container {
+  width: 100%;
+  max-width: 960px;
+  margin: 24px auto;
+  background: var(--uf-panel);
+  border: 1px solid var(--uf-border);
+  border-radius: var(--uf-radius);
+  box-shadow: var(--uf-shadow);
+  padding: 24px 28px;
+  color: var(--uf-text);
+  font-family: var(--font-family);
+}
+
+/* Ensure all children respect the container's width */
+.uf-container, .uf-container * { box-sizing: border-box; }
+
+.uf-header { margin-bottom: 12px; }
+.uf-title { font-size: var(--font-size-2xl); margin: 0 0 6px; color: var(--secondary-color); }
+.uf-description { margin: 0; color: var(--uf-text-dim); font-size: .95rem; }
+
+.uf-form { display: flex; flex-direction: column; gap: var(--spacing-medium); }
+.uf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 640px) { .uf-grid-2 { grid-template-columns: 1fr; } }
+.uf-field { display: flex; flex-direction: column; gap: 6px; }
+.uf-label { font-weight: 600; color: var(--uf-text); text-align: left; }
+.surgeon-select .uf-label, .patient-select .uf-label { margin-bottom: 2px; }
+.uf-required { color: var(--uf-danger); margin-left: 4px; }
+
+.uf-input-wrap { position: relative; }
+.uf-input {
+  width: 100%;
+  height: var(--uf-input-height);
+  padding: 0 14px;
+  padding-right: 44px; /* room for visibility toggle or icons */
+  background: var(--white-color);
+  border: 1px solid var(--uf-border);
+  border-radius: 10px;
+  color: var(--uf-text);
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.uf-input:focus { border-color: var(--uf-border-focus); box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
+.uf-input-error { border-color: var(--uf-danger); }
+
+.uf-input-action {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--uf-border);
+  background: var(--background-main);
+  color: var(--black-color);
+  cursor: pointer;
+}
+
+.uf-error {
+  margin: 0;
+  color: var(--uf-danger);
+  font-size: .9rem;
+}
+
+.uf-actions { margin-top: 8px; display: flex; gap: 10px; }
+.uf-button {
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid var(--uf-border);
+  background: var(--white-color);
+  color: var(--black-color);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.uf-button:hover { background: #f3f6ff; border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(17,145,250,0.15); }
+.uf-button[disabled] { opacity: .65; cursor: not-allowed; }
+.uf-button-primary {
+  /* Match dashboard gradient button */
+  background: linear-gradient(45deg, #1191FA, #004285) !important;
+  color: var(--white-color) !important;
+  border: none !important;
+  border-radius: 16px;
+  height: 52px;
+  padding: 0 22px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.uf-button-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0, 66, 133, 0.3); }
+.uf-button-primary:focus { outline: 3px solid #ffa500; outline-offset: 2px; }
+
+.uf-footer { margin-top: 12px; color: var(--uf-text-dim); font-size: .9rem; text-align: center; }
+
+/* File row (custom file input style) */
+.uf-file-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px dashed var(--uf-border); border-radius: 10px; background: var(--white-color); }
+.uf-file-name { color: #667085; font-size: .95rem; }
+.model-upload-group { display: flex; flex-direction: column; gap: 8px; }
+/* Ensure the “Kies bestand” control has even vertical padding */
+.uf-file-row .uf-button { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 14px; line-height: 1; }
+
+/* Text link style in primary/secondary blue */
+.uf-text-link { color: var(--secondary-color); font-weight: 600; cursor: pointer; }
+.uf-text-link:hover { text-decoration: underline; }
+
+/* Surgeon select – improve readability between names */
+.surgeon-select select.uf-input { min-height: 220px; line-height: 1.6; }
+.surgeon-select select.uf-input option { padding: 8px 12px; border-bottom: 1px solid var(--uf-border); }
+.surgeon-select select.uf-input option:last-child { border-bottom: none; }
+.surgeon-select select.uf-input option:checked { background-color: rgba(17,145,250,0.12); }
+/* Remove confusing active/focus paint inside listboxes */
+.surgeon-select select.uf-input option:focus,
+.patient-select select.uf-input option:focus { background-color: transparent !important; }
+
+/* Hide default dropdown arrow for large listboxes to avoid visual confusion */
+.uf-input { appearance: none; -webkit-appearance: none; -moz-appearance: none; }
+
+/* Search input with icon */
+.uf-input-search-wrap { position: relative; }
+.uf-input-search { padding-left: 36px; }
+.uf-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #9CA3AF; pointer-events: none; }
+
+/* Empty state helper */
+.uf-empty {
+  margin: 4px 0 8px 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--uf-border);
+  border-radius: 10px;
+  background: #fafafa;
+  color: #6b7280;
+  font-size: .95rem;
+  text-align: left;
+}
+
+/* Centered empty state placed inside list area */
+.uf-empty-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #6b7280;
+  background: #fafafa;
+}
+
+/* Modal modern style */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+.modal-content { background: #fff; border-radius: 16px; padding: 2rem 2rem 1.25rem; max-width: 560px; width: 92%; box-shadow: 0 24px 80px rgba(0,0,0,.28); text-align: left; }
+.modal-title { margin: 0 0 .5rem 0; font-size: var(--font-size-3xl); }
+.modal-sub { margin: 0 0 1.25rem 0; color: #6b7280; }
+.modal-actions { display: flex; gap: .75rem; justify-content: flex-end; }
+.modal-actions--right { justify-content: flex-end; }
+
+@media (max-width: 480px) {
+  .uf-container { margin: 20px 12px; padding: 16px; border-radius: 10px; }
+  .uf-input { height: 44px; }
+  .uf-button { height: 44px; }
+}
+
+

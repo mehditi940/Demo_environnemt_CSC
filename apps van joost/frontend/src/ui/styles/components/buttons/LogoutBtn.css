@@ -1,0 +1,32 @@
+.logoutBtn{
+    background-color: var(--accent-color); /* Orange accent color */
+    color: #ffffff;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(252, 96, 57, 0.2);
+}
+
+.logoutBtn:hover{
+    background-color: #e55a2b; /* Darker orange hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(252, 96, 57, 0.3);
+}
+
+.logoutBtn:focus {
+    outline: 3px solid #ffa500;
+    outline-offset: 2px;
+}
+
+.logoutBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(252, 96, 57, 0.2);
+}

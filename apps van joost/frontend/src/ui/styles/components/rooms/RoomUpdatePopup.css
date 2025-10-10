@@ -1,0 +1,204 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+
+.popup-card {
+  background: #fff;
+  padding: 28px;
+  border-radius: 12px;
+  width: 420px;
+  max-width: 90%;
+  position: relative;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--border-color);
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* unified vertical rhythm */
+  box-sizing: border-box;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #667085;
+  transition: background 0.2s, color 0.2s;
+}
+
+.close-btn:hover {
+  background: #f2f4f7;
+  color: #111827;
+}
+
+.popup-card h2 {
+  margin: 0 0 12px;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--black-color);
+}
+
+.popup-card label {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 6px; /* top handled by container gap */
+  color: #6b7280;
+}
+
+.popup-card input[type="text"],
+.popup-card input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: #f9fafb;
+  font-size: 15px;
+  margin-bottom: 0; /* spacing handled by gap */
+  box-sizing: border-box; /* prevent overflow tightening on right */
+}
+
+.popup-card input[type="text"]:focus {
+  border-color: var(--primary-color);
+  outline: 3px solid rgba(17, 145, 250, 0.15);
+}
+
+.model-list {
+  margin-top: 0;
+}
+
+.model-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f3f4f6;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.model-item span {
+  font-size: 14px;
+  color: #333;
+}
+
+.model-item button {
+  background: transparent;
+  color: #d92d20;
+  border: 1px solid #f2b8b5;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.model-item button:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.file-upload div {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.popup-actions{ display:flex; gap:12px; align-items:center; margin-top: 4px; }
+.popup-actions--right{ justify-content: flex-end; }
+.save-btn {
+  padding: 10px 18px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background-color: var(--primary-color);
+}
+
+.delete-btn{
+  padding: 10px 14px;
+  background: transparent;
+  color: #d92d20;
+  border: 1px solid #f2b8b5;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.delete-btn:hover{ background:#fee2e2; border-color:#fca5a5; }
+
+
+.input-error {
+  border: 1px solid red;
+}
+
+.error-message {
+  color: red;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.update-patient-container{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.update-pient-container label{ margin-bottom: 0; }
+.update-patient-container .react-select-container{ flex: 1; }
+.update-patient-container .react-select__control{ min-height: 36px; height: 36px; }
+.update-patient-container .react-select__value-container{ padding: 2px 8px; }
+.update-patient-container .react-select__indicators{ height: 36px; }
+.update-patient-container .react-select__placeholder{ line-height: 30px; }
+
+.small-action-btn{
+  background: transparent;
+  color: var(--black-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 36px; /* aligns better with labels */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.small-action-btn:hover{ background:#f3f4f6; }
+.small-action-btn:focus{ outline: 3px solid #ffa500; outline-offset: 2px; }

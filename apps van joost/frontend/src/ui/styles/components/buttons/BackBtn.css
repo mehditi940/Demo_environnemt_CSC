@@ -1,0 +1,41 @@
+.backBtn {
+    background: transparent;
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 0;
+    padding: 0.25rem 0.25rem;
+    font-size: var(--font-size-small);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    box-shadow: none;
+    display: inline-flex;
+    align-items: center;
+    position: fixed;
+    z-index: 1000;
+    overflow: visible;
+    width: auto;   
+    max-width: fit-content;
+}
+
+.backBtn:hover { color: var(--primary-color); }
+
+.backBtn:active {
+    transform: translateY(1px);
+    transition: all 0.1s ease;
+}
+
+.backBtn:focus {
+    outline: 3px solid #ffa500;
+    outline-offset: 2px;
+}
+
+.backBtn i {
+    font-size: 1.1rem; /* bigger arrow */
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.backBtn:hover i {
+    transform: scale(1.1);
+}

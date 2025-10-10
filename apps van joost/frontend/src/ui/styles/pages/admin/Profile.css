@@ -1,0 +1,108 @@
+.profile-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    row-gap: 12px;
+    column-gap: 16px;
+}
+
+.profile-label {
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.profile-actions { margin: 16px auto 0; display: flex; max-width: 900px; }
+
+/* Ensure profile button matches dashboard gradient style */
+.profile-actions .btn-primary {
+    background: linear-gradient(45deg, #1191FA, #004285);
+    color: var(--white-color);
+    box-shadow: 0 3px 8px rgba(0, 66, 133, 0.25);
+}
+.profile-actions .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(0, 66, 133, 0.35);
+}
+
+/* New profile layout */
+.profile-layout {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.profile-summary {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-avatar {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #1191FA, #004285);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 32px;
+    box-shadow: 0 6px 18px rgba(0, 66, 133, 0.25);
+}
+
+.profile-name {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.role-badge {
+    font-size: 12px;
+    color: #98A2B3;
+}
+
+.profile-details {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.profile-dl {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    row-gap: 12px;
+    column-gap: 16px;
+    margin: 0;
+}
+.profile-dl dt {
+    color: #6b7280; font-weight: 600;
+}
+.profile-dl dd {
+    margin: 0;
+}
+
+.profile-actions--left { grid-column: 1 / 2; }
+.profile-actions--left .btn {
+    width: 100%;
+    padding: 0.9rem 1.25rem; /* iets meer verticale ademruimte */
+    gap: 0.75rem; /* meer ruimte tussen icoon en tekst */
+    border-radius: 12px;
+}
+.profile-actions--left .btn svg { width: 20px; height: 20px; }
+
+@media (max-width: 768px) {
+    .profile-layout { grid-template-columns: 1fr; }
+    .profile-actions--left { grid-column: 1 / -1; }
+}
+
+
