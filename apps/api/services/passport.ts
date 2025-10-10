@@ -136,7 +136,23 @@ export const AdfsJwtStrategy = hasAdfsEnv
           rateLimit: true,
           jwksRequestsPerMinute: 5,
         }) as any,
-        issuer: process.env.ADFS_OIDC_ISSUER!,
+        // Accept both the OIDC issuer (for id_token) and the OAuth access token issuer used by AD FS
+        issuer: (() => {
+          const oidcIssuer = process.env.ADFS_OIDC_ISSUER!;
+          const configuredAccessIssuer = process.env.ADFS_ACCESS_TOKEN_ISSUER;
+          // Derive a common AD FS access token issuer if not explicitly configured
+          const derivedAccessIssuer = (() => {
+            try {
+              if (!oidcIssuer) return undefined;
+              const u = new URL(oidcIssuer);
+              // AD FS typically uses http and '/adfs/services/trust' for access tokens
+              return `http://${u.host}/adfs/services/trust`;
+            } catch {
+              return undefined;
+            }
+          })();
+          return [oidcIssuer, configuredAccessIssuer || derivedAccessIssuer].filter(Boolean) as string[];
+        })(),
         // audience is optional; when provided can be comma-separated list
         audience: process.env.ADFS_OIDC_AUDIENCE,
         algorithms: ["RS256", "RS384", "RS512"],

@@ -43,6 +43,14 @@ export const oidcConfig = {
   // Authorization Code + PKCE (vereist door oidc-client-ts)
   response_type: "code",
   scope: import.meta.env.VITE_OIDC_SCOPE || "openid profile",
+  // AD FS uses non-standard 'resource' to target a specific Web API audience
+  // Send it on both authorize and token requests when provided
+  ...(import.meta.env.VITE_OIDC_RESOURCE
+    ? { extraQueryParams: { resource: import.meta.env.VITE_OIDC_RESOURCE } }
+    : {}),
+  ...(import.meta.env.VITE_OIDC_RESOURCE
+    ? { extraTokenParams: { resource: import.meta.env.VITE_OIDC_RESOURCE } }
+    : {}),
   // AD FS often blocks discovery CORS; provide metadata or metadataUrl
   ...(metadata ? { metadata } : {}),
   ...(metadataUrl && !metadata ? { metadataUrl } : {}),
