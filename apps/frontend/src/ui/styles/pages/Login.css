@@ -16,6 +16,9 @@
 .login-right .uf-header{ margin-bottom: 16px; text-align: center; }
 .login-right .uf-title{ text-align: center; color: var(--secondary-color); font-size: var(--font-size-4xl); }
 
+/* Center actions (e.g., login button) on the login page */
+.login-right .uf-actions{ justify-content: center; }
+
 .login-layout{ position: relative; }
 
 @media (max-width: 960px){

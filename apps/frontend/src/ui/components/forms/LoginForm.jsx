@@ -32,7 +32,7 @@ const LoginForm = () => {
   return (
     <FormWrapper
       title="Inloggen"
-      description="Gebruik je AD FS-account om door te gaan."
+      description="Klik op de knop hieronder om door te gaan."
       onSubmit={handleAdfsLogin}
     >
       <div className="uf-actions">
@@ -41,7 +41,7 @@ const LoginForm = () => {
           className="uf-button uf-button-primary"
           onClick={loginWithAdfs}
         >
-          Inloggen met AD (ADFS)
+          Inloggen
         </button>
       </div>
     </FormWrapper>
