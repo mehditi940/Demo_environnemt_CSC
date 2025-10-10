@@ -18,10 +18,8 @@ const AuthCallback = () => {
     (async () => {
       try {
         await completeLogin();
-        const user = await refreshUser();
-        const role = (user?.role || "").toLowerCase();
-        const target = role === "surgeon" ? ROUTES.SURGEON.DASHBOARD : ROUTES.ADMIN.DASHBOARD;
-        navigate(target, { replace: true });
+        await refreshUser();
+        navigate(ROUTES.ADMIN.DASHBOARD, { replace: true });
       } catch (error) {
         console.error("OIDC callback error", error);
         navigate(ROUTES.LOGIN, { replace: true });

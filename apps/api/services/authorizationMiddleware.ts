@@ -1,15 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UserInfo } from "../schemas/user";
 
-type Roles = "super-admin" | "admin" | "user" | "system" | "surgeon";
-
-const roleWeight: Record<string, number> = {
-  system: 99,
-  "super-admin": 3,
-  admin: 2,
-  surgeon: 1,
-  user: 1,
-};
+type Roles = "super-admin" | "admin" | "user" | "system";
 
 export const authorizationMiddleware =
   (minimumRole?: Roles) =>
@@ -25,10 +17,12 @@ export const authorizationMiddleware =
       return;
     }
 
-    const need = roleWeight[minimumRole] ?? 0;
-    const have = roleWeight[(user.role as string) || ""] ?? 0;
+    if (user.role === "super-admin" || user.role === "system") {
+      next();
+      return;
+    }
 
-    if (have >= need) {
+    if (user.role === "admin" && minimumRole !== "super-admin") {
       next();
       return;
     }
