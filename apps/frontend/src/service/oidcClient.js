@@ -20,7 +20,11 @@ export async function loginWithAdfs() {
       // eslint-disable-next-line no-console
       console.log("OIDC settings", manager.settings);
     }
-    await manager.signinRedirect();
+    const resource = import.meta.env.VITE_OIDC_RESOURCE;
+    // Ensure AD FS receives the 'resource' param on authorize request
+    await manager.signinRedirect(
+      resource ? { extraQueryParams: { resource } } : undefined
+    );
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error("signinRedirect error", e);
