@@ -17,11 +17,11 @@ const authRouter = Router();
 const requireAuth = getAuthMiddleware();
 
 // Current authenticated user (works for local JWT and ADFS OIDC)
-authRouter.get("/me", requireAuth, async (req, res) => {
+authRouter.get("/me", requireAuth, async (req, res): Promise<void> => {
   try {
     const user = req.user as any;
     if (user && user.id) {
-      return res.status(200).json({
+      res.status(200).json({
         id: user.id,
         firstName: user.firstName,
         email: user.email,
@@ -29,10 +29,13 @@ authRouter.get("/me", requireAuth, async (req, res) => {
         uiRole: (user as any).uiRole,
         groups: (user as any).groups,
       });
+      return;
     }
     res.status(401).json({ message: "Unauthorized" });
+    return;
   } catch (err) {
     res.status(500).json({ message: "Server error" });
+    return;
   }
 });
 
