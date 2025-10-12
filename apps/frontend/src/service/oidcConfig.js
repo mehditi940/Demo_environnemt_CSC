@@ -46,13 +46,6 @@ export const oidcConfig = {
   // AD FS often blocks discovery CORS; provide metadata or metadataUrl
   ...(metadata ? { metadata } : {}),
   ...(metadataUrl && !metadata ? { metadataUrl } : {}),
-  // AD FS often requires a resource parameter to get an access token for the API audience
-  ...(import.meta.env.VITE_OIDC_RESOURCE
-    ? {
-        extraQueryParams: { resource: import.meta.env.VITE_OIDC_RESOURCE },
-        extraTokenParams: { resource: import.meta.env.VITE_OIDC_RESOURCE },
-      }
-    : {}),
   // AD FS userinfo endpoint may be unavailable; allow opt-out via env
   loadUserInfo: (import.meta.env.VITE_OIDC_LOAD_USERINFO || "false").toLowerCase() === "true",
   // Silent renew blijft mogelijk via authorize endpoint
