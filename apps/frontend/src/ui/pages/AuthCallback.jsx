@@ -18,8 +18,18 @@ const AuthCallback = () => {
     (async () => {
       try {
         await completeLogin();
-        await refreshUser();
-        navigate(ROUTES.ADMIN.DASHBOARD, { replace: true });
+        const user = await refreshUser();
+        const uiRole = user?.uiRole;
+        const role = user?.role;
+        if (uiRole === "chirurg") {
+          navigate(ROUTES.SURGEON.DASHBOARD, { replace: true });
+          return;
+        }
+        if (uiRole === "admin" || role === "admin" || role === "super-admin") {
+          navigate(ROUTES.ADMIN.DASHBOARD, { replace: true });
+          return;
+        }
+        navigate(ROUTES.SURGEON.DASHBOARD, { replace: true });
       } catch (error) {
         console.error("OIDC callback error", error);
         navigate(ROUTES.LOGIN, { replace: true });

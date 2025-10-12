@@ -117,6 +117,7 @@ app.use(
 
 // Passport middleware
 app.use(bodyParser.json());
+app.use(passport.initialize());
 passport.use(LocalLoginStrategy);
 if (PassportJwtStrategy) {
   passport.use(PassportJwtStrategy);

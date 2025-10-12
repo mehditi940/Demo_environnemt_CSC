@@ -123,6 +123,64 @@ const hasAdfsEnv = !!(
   process.env.ADFS_OIDC_ISSUER
 );
 
+function csvToList(value?: string): string[] {
+  return (value || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+// Configurable mapping from AD FS group/role claims to app/UI roles
+// Support both ADFS_ROLE_MAP_* and ADFS_GROUP_* env names
+const ADMIN_MATCHES = [
+  ...csvToList(process.env.ADFS_ROLE_MAP_ADMIN),
+  ...csvToList(process.env.ADFS_GROUP_ADMIN),
+];
+const SURGEON_MATCHES = [
+  ...csvToList(process.env.ADFS_ROLE_MAP_SURGEON),
+  ...csvToList(process.env.ADFS_GROUP_SURGEON),
+];
+// Which claim keys to inspect for roles/groups (in order)
+const CLAIM_KEYS = csvToList(process.env.ADFS_ROLE_CLAIMS).length
+  ? csvToList(process.env.ADFS_ROLE_CLAIMS)
+  : [
+      "roles",
+      "role",
+      "groups",
+      "group",
+      "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid",
+    ];
+
+function getTokenGroups(payload: any): string[] {
+  const results: string[] = [];
+  for (const key of CLAIM_KEYS) {
+    const v = (payload as any)?.[key];
+    if (!v) continue;
+    if (Array.isArray(v)) {
+      for (const item of v) {
+        if (typeof item === "string") results.push(item);
+      }
+    } else if (typeof v === "string") {
+      // Can be space or comma separated depending on IdP
+      const parts = v.split(/[;,\s]+/).map((s) => s.trim()).filter(Boolean);
+      results.push(...parts);
+    }
+  }
+  return Array.from(new Set(results));
+}
+
+function pickUiRole(groups: string[]): "chirurg" | "admin" | "user" {
+  const hasAdmin = groups.some((g) =>
+    ADMIN_MATCHES.some((m) => g.toLowerCase() === m.toLowerCase())
+  );
+  if (hasAdmin) return "admin";
+  const hasSurgeon = groups.some((g) =>
+    SURGEON_MATCHES.some((m) => g.toLowerCase() === m.toLowerCase())
+  );
+  if (hasSurgeon) return "chirurg";
+  return "user";
+}
+
 export const AdfsJwtStrategy = hasAdfsEnv
   ? new JwtStrategy(
       {
@@ -153,13 +211,20 @@ export const AdfsJwtStrategy = hasAdfsEnv
           const firstName = payload?.given_name || payload?.name || email || "User";
           const id = (payload?.sub || payload?.oid || payload?.sid || email || "").toString();
 
-          // Default role for ADFS users; override with ADFS_DEFAULT_ROLE env if desired
+          // Extract groups/roles from token, then derive UI role and backend role
+          const groups = getTokenGroups(payload);
+          const uiRole = pickUiRole(groups);
+          // Backend authorization role: treat admin UI role as admin, others as user
+          const backendRole = uiRole === "admin" ? "admin" : (process.env.ADFS_DEFAULT_ROLE || "user");
+
           const user = {
             id,
             firstName,
-            role: process.env.ADFS_DEFAULT_ROLE || "admin",
+            role: backendRole,
             email,
-          };
+            groups,
+            uiRole,
+          } as any;
           return cb(null, user);
         } catch (error) {
           return cb(error as Error);
