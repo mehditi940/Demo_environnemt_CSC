@@ -16,7 +16,7 @@ const authRouter = Router();
 
 const requireAuth = getAuthMiddleware();
 
-// Current authenticated user (works for local JWT and ADFS OIDC)
+// Current authenticated user
 authRouter.get("/me", requireAuth, async (req, res): Promise<void> => {
   try {
     const user = req.user as any;

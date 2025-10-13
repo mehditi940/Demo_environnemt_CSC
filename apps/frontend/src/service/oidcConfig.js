@@ -46,7 +46,7 @@ export const oidcConfig = {
   // AD FS often blocks discovery CORS; provide metadata or metadataUrl
   ...(metadata ? { metadata } : {}),
   ...(metadataUrl && !metadata ? { metadataUrl } : {}),
-  // AD FS often requires a resource parameter to get an access token for the API audience
+  // Request API audience access token (AD FS requires resource)
   ...(import.meta.env.VITE_OIDC_RESOURCE
     ? {
         extraQueryParams: { resource: import.meta.env.VITE_OIDC_RESOURCE },

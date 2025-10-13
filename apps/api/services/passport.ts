@@ -124,67 +124,6 @@ const hasAdfsEnv = !!(
   process.env.ADFS_OIDC_ISSUER
 );
 
-function csvToList(value?: string): string[] {
-  return (value || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-// Configurable mapping from AD FS group/role claims to app/UI roles
-// Support both ADFS_ROLE_MAP_* and ADFS_GROUP_* env names
-const ADMIN_MATCHES = [
-  ...csvToList(process.env.ADFS_ROLE_MAP_ADMIN),
-  ...csvToList(process.env.ADFS_GROUP_ADMIN),
-];
-const SURGEON_MATCHES = [
-  ...csvToList(process.env.ADFS_ROLE_MAP_SURGEON),
-  ...csvToList(process.env.ADFS_GROUP_SURGEON),
-];
-// Which claim keys to inspect for roles/groups (in order)
-const CLAIM_KEYS = csvToList(process.env.ADFS_ROLE_CLAIMS).length
-  ? csvToList(process.env.ADFS_ROLE_CLAIMS)
-  : [
-      "roles",
-      "role",
-      "groups",
-      "group",
-      // AD FS JWT short name for group SID claims is usually 'groupsid'
-      "groupsid",
-      // Some environments keep the full URI as the key; keep for safety
-      "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid",
-    ];
-
-function getTokenGroups(payload: any): string[] {
-  const results: string[] = [];
-  for (const key of CLAIM_KEYS) {
-    const v = (payload as any)?.[key];
-    if (!v) continue;
-    if (Array.isArray(v)) {
-      for (const item of v) {
-        if (typeof item === "string") results.push(item);
-      }
-    } else if (typeof v === "string") {
-      // Can be space or comma separated depending on IdP
-      const parts = v.split(/[;,\s]+/).map((s) => s.trim()).filter(Boolean);
-      results.push(...parts);
-    }
-  }
-  return Array.from(new Set(results));
-}
-
-function pickUiRole(groups: string[]): "chirurg" | "admin" | "user" {
-  const hasAdmin = groups.some((g) =>
-    ADMIN_MATCHES.some((m) => g.toLowerCase() === m.toLowerCase())
-  );
-  if (hasAdmin) return "admin";
-  const hasSurgeon = groups.some((g) =>
-    SURGEON_MATCHES.some((m) => g.toLowerCase() === m.toLowerCase())
-  );
-  if (hasSurgeon) return "chirurg";
-  return "user";
-}
-
 export const AdfsJwtStrategy = hasAdfsEnv
   ? new JwtStrategy(
       {
@@ -197,11 +136,16 @@ export const AdfsJwtStrategy = hasAdfsEnv
           cacheMaxAge: 10 * 60 * 1000, // 10 minutes
           rateLimit: true,
           jwksRequestsPerMinute: 5,
-          agent: (process.env.ADFS_INSECURE_TLS === "true") ? new (require("https")).Agent({ rejectUnauthorized: false }) : undefined,
         }) as any,
-        // issuer omitted to support AD FS services/trust tokens\r\n        // audience is optional; when provided can be comma-separated list
+        // Accept both the standard OIDC issuer and (optionally) the AD FS services/trust issuer
+        issuer: [
+          process.env.ADFS_OIDC_ISSUER!,
+          process.env.ADFS_OIDC_LEGACY_ISSUER || "",
+        ].filter(Boolean) as any,
+        // audience is optional; when provided can be comma-separated list
         audience: process.env.ADFS_OIDC_AUDIENCE,
-        clockTolerance: 60,`n        algorithms: ["RS256", "RS384", "RS512"],
+        clockTolerance: 60,
+        algorithms: ["RS256", "RS384", "RS512"],
       },
       async (payload: any, cb) => {
         try {
