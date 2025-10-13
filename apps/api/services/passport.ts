@@ -201,7 +201,7 @@ export const AdfsJwtStrategy = hasAdfsEnv
         }) as any,
         // issuer omitted to support AD FS services/trust tokens\r\n        // audience is optional; when provided can be comma-separated list
         audience: process.env.ADFS_OIDC_AUDIENCE,
-        algorithms: ["RS256", "RS384", "RS512"],
+        clockTolerance: 60,`n        algorithms: ["RS256", "RS384", "RS512"],
       },
       async (payload: any, cb) => {
         try {
@@ -236,4 +236,5 @@ export const AdfsJwtStrategy = hasAdfsEnv
       }
     )
   : undefined;
+
 
