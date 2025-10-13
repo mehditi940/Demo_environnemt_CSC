@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Strategy as LocalStategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import jwksRsa from "jwks-rsa";
+import https from "https";
 import { Strategy as BearerStrategy } from "passport-http-bearer";
 import crypto from "crypto";
 import db from "../schemas/db";
@@ -148,6 +149,9 @@ const CLAIM_KEYS = csvToList(process.env.ADFS_ROLE_CLAIMS).length
       "role",
       "groups",
       "group",
+      // AD FS JWT short name for group SID claims is usually 'groupsid'
+      "groupsid",
+      // Some environments keep the full URI as the key; keep for safety
       "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid",
     ];
 
@@ -193,9 +197,9 @@ export const AdfsJwtStrategy = hasAdfsEnv
           cacheMaxAge: 10 * 60 * 1000, // 10 minutes
           rateLimit: true,
           jwksRequestsPerMinute: 5,
+          agent: (process.env.ADFS_INSECURE_TLS === "true") ? new (require("https")).Agent({ rejectUnauthorized: false }) : undefined,
         }) as any,
-        issuer: process.env.ADFS_OIDC_ISSUER!,
-        // audience is optional; when provided can be comma-separated list
+        // issuer omitted to support AD FS services/trust tokens\r\n        // audience is optional; when provided can be comma-separated list
         audience: process.env.ADFS_OIDC_AUDIENCE,
         algorithms: ["RS256", "RS384", "RS512"],
       },
@@ -232,3 +236,4 @@ export const AdfsJwtStrategy = hasAdfsEnv
       }
     )
   : undefined;
+
