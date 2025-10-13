@@ -144,10 +144,9 @@ export const AdfsJwtStrategy = hasAdfsEnv
         ].filter(Boolean) as any,
         // audience is optional; when provided can be comma-separated list
         audience: process.env.ADFS_OIDC_AUDIENCE,
-        clockTolerance: 60,
         algorithms: ["RS256", "RS384", "RS512"],
       },
-      async (payload: any, cb) => {
+      async (payload: any, cb: (err: any, user?: any, info?: any) => void) => {
         try {
           // Map common ADFS/AAD claim shapes to our UserInfo
           const email =
