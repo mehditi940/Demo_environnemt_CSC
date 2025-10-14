@@ -25,7 +25,17 @@ const ProtectedRoute = ({ element, allowedRoles }) => {
 
   if (loading) return <p>Loading...</p>; // Wacht tot de user is geladen
 
-  if (!user || !allowedRoles.includes(user.role)) {
+  // Bepaal effectieve rollen op basis van backend role en ADFS uiRole
+  const effectiveRoles = new Set();
+  if (user?.role) effectiveRoles.add(user.role);
+  if (user?.uiRole) effectiveRoles.add(user.uiRole);
+  // Map ADFS uiRole 'chirurg' naar route-rol 'surgeon'
+  if (user?.uiRole === "chirurg") effectiveRoles.add("surgeon");
+  // Behandel super-admin en system als admin voor route-toegang
+  if (user?.role === "super-admin" || user?.role === "system") effectiveRoles.add("admin");
+
+  const isAllowed = user && allowedRoles.some((r) => effectiveRoles.has(r));
+  if (!isAllowed) {
     return <Navigate to="/login" replace />; // Terug naar login als user niet mag
   }
 
