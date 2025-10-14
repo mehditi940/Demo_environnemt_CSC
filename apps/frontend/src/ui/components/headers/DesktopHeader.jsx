@@ -41,9 +41,21 @@ const DesktopHeader = () => {
     const roleDisplayMap = {
         admin: 'Beheerder',
         surgeon: 'Chirurg',
+        chirurg: 'Chirurg',
         user: 'Gebruiker',
         system: 'Systeem',
     };
+
+    // Bepaal effectieve rol op basis van backend role en eventuele ADFS uiRole
+    const effectiveRoleKey = (() => {
+        const r = currentUser?.role?.toLowerCase();
+        const ui = (currentUser && (currentUser).uiRole) ? (currentUser).uiRole.toLowerCase() : undefined;
+        if (r === 'admin' || ui === 'admin') return 'admin';
+        // Map uiRole 'chirurg' naar 'surgeon' voor route checks, maar toon als 'Chirurg'
+        if (ui === 'chirurg' || r === 'surgeon') return 'surgeon';
+        if (r === 'system') return 'system';
+        return 'user';
+    })();
 
     const rawFirstName = currentUser?.firstName?.trim();
     const displayFirstName = rawFirstName
@@ -66,7 +78,7 @@ const DesktopHeader = () => {
             </nav>
 
             <div className="header-actions">
-                {currentUser?.role === 'admin' && (
+                {effectiveRoleKey === 'admin' && (
                     <>
                         <NavLink
                             to="/admin/dashboard"
@@ -79,7 +91,7 @@ const DesktopHeader = () => {
                         <span className="header-separator" aria-hidden="true"></span>
                     </>
                 )}
-                {currentUser?.role === 'surgeon' && (
+                {(effectiveRoleKey === 'surgeon') && (
                     <>
                         <Link 
                             to="/chirurg/dashboard" 
@@ -101,9 +113,7 @@ const DesktopHeader = () => {
                     <div className="user-badge">
                         <span className="user-badge__name">{displayFirstName}</span>
                         {(() => {
-                            const roleKey = currentUser?.role?.toLowerCase();
-                            if (!roleKey) return null;
-                            const localized = roleDisplayMap[roleKey] || (roleKey.charAt(0).toUpperCase() + roleKey.slice(1));
+                            const localized = roleDisplayMap[effectiveRoleKey] || (effectiveRoleKey.charAt(0).toUpperCase() + effectiveRoleKey.slice(1));
                             return <span className="user-badge__role">{localized}</span>;
                         })()}
                     </div>
