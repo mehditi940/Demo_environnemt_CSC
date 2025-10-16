@@ -30,6 +30,14 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     https: httpsConfig,
+    proxy: {
+      '/auth': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+      '/oidc': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+      '/patient': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+      '/room': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+      '/connection': { target: 'http://127.0.0.1:3001', ws: true, changeOrigin: true },
+      '/static': { target: 'http://127.0.0.1:3001', changeOrigin: true },
+    },
     allowedHosts: [
       'localhost',
       '127.0.0.1',
